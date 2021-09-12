@@ -9,4 +9,5 @@ services:
       - ./app/public:/usr/src/app/public
       - ./app/styles:/usr/src/app/styles
       - ./app/libs:/usr/src/app/libs
+      - ./app/server:/usr/src/app/server
   
