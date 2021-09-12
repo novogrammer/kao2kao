@@ -1,21 +1,21 @@
 import Head from 'next/head'
 import { useRef } from 'react';
 import { useMount,useUnmount } from "react-use";
-import App from "../client/App";
+import ClientApp from "../client/ClientApp";
 
 export default function Home() {
-  const appRef=useRef(null);
+  const clientAppRef=useRef(null);
 
 
 
   useMount(async ()=>{
-    const app=new App();
-    appRef.current=app;
-    await app.setupPromise;
+    const clientApp=new ClientApp();
+    clientAppRef.current=clientApp;
+    await clientApp.setupPromise;
   });
   useUnmount(async ()=>{
-    const app=appRef.current;
-    await app.destroyAsync();
+    const clientApp=clientAppRef.current;
+    await clientApp.destroyAsync();
   });
 
   return (

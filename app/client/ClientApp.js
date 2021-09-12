@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-export default class App{
+export default class ClientApp{
   constructor(){
     this.binds = {};
     this.setupPromise = this.setupAsync();
@@ -30,10 +30,10 @@ export default class App{
     socket.close();
   }
   onConnect() {
-    console.log("App#onConnect");
+    console.log("ClientApp#onConnect");
   }
   onDisconnect() {
-    console.log("App#onDisconnect");
+    console.log("ClientApp#onDisconnect");
     //DO NOTHING
   }
 }
