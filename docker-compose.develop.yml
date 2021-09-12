@@ -10,4 +10,5 @@ services:
       - ./app/styles:/usr/src/app/styles
       - ./app/libs:/usr/src/app/libs
       - ./app/server:/usr/src/app/server
+      - ./app/client:/usr/src/app/client
   
