@@ -1,6 +1,31 @@
 import Head from 'next/head'
+import io from 'socket.io-client';
+import { useRef } from 'react';
+import { useMount,useUnmount } from "react-use";
 
 export default function Home() {
+  const socket=useRef(null);
+
+
+  function onConnect(){
+    console.log("onConnect");
+  }
+  function onDisconnect(){
+    console.log("onDisconnect");
+  }
+
+  useMount(()=>{
+    const options={};
+    socket.current=io(options);
+    socket.current.on("connect",onConnect);
+    socket.current.on("disconnect",onDisconnect);
+  });
+  useUnmount(()=>{
+    socket.current.off("connect",onConnect);
+    socket.current.off("disconnect",onDisconnect);
+    socket.current.close();
+  });
+
   return (
     <div>
       <Head>
