@@ -5,11 +5,15 @@ import ClientApp from "../client/ClientApp";
 
 export default function Home() {
   const clientAppRef=useRef(null);
+  const videoRef=useRef(null);
 
 
 
   useMount(async ()=>{
-    const clientApp=new ClientApp();
+    const video=videoRef.current;
+    const clientApp=new ClientApp({
+      video,
+    });
     clientAppRef.current=clientApp;
     await clientApp.setupPromise;
   });
@@ -27,6 +31,7 @@ export default function Home() {
       </Head>
 
       <main>
+        <video ref={videoRef} playsInline />
       </main>
 
     </div>
