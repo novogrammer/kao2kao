@@ -142,6 +142,9 @@ export default class ClientApp{
     remoteVideo.play();
 
     Object.assign(peerConnection,{
+      onconnectionstatechange:()=>{
+        console.log(`onconnectionstatechange: ${peerConnection.connectionState}`);
+      },
       onicecandidate:(event)=>{
         const {candidate}=event;
         console.log(`onicecandidate candidate: ${candidate}`);
