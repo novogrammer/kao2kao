@@ -14,6 +14,7 @@ export default function Home() {
     const clientApp=new ClientApp({
       video,
     });
+    window.clientApp=clientApp;
     clientAppRef.current=clientApp;
     await clientApp.setupPromise;
   });
