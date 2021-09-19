@@ -59,7 +59,7 @@ export default class ServerApp{
     socket.on("disconnect", (reason) => {
       console.log("disconnect reason:" + reason);
       socket.broadcast.emit(EVENT_NEED_TO_DISCONNECT,{
-        id:socket.id,
+        peerId:socket.id,
       });
     });
 
@@ -76,7 +76,9 @@ export default class ServerApp{
 
     for(let id of ids){
       if(socket.id!=id){
-        socket.emit(EVENT_NEED_TO_CONNECT,{id});
+        socket.emit(EVENT_NEED_TO_CONNECT,{
+          peerId:id,
+        });
       }
     }
 

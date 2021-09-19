@@ -201,16 +201,16 @@ export default class ClientApp{
     console.log("ClientApp#onDisconnect");
     //DO NOTHING
   }
-  async onNeedToConnectAsync({id}){
-    console.log("ClientApp#onNeedToConnectAsync",id);
+  async onNeedToConnectAsync({peerId}){
+    console.log("ClientApp#onNeedToConnectAsync",peerId);
     await this.setupPeerConnectionOfferAsync({
-      peerId:id,
+      peerId,
     });
   }
-  async onNeedToDisconnectAsync({id}){
-    console.log("ClientApp#onNeedToDisconnectAsync",id);
+  async onNeedToDisconnectAsync({peerId}){
+    console.log("ClientApp#onNeedToDisconnectAsync",peerId);
     await this.destroyPeerConnectionAsync({
-      peerId:id,
+      peerId,
     });
   }
 
