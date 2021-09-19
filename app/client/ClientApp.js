@@ -51,7 +51,7 @@ export default class ClientApp{
   async setupCameraAsync() {
     const { localVideo } = this;
     const stream = await navigator.mediaDevices.getUserMedia({
-      'audio': false,
+      'audio': true,
       'video': {
         facingMode: 'user',
         width: VIDEO_SIZE,
