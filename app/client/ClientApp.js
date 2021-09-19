@@ -1,12 +1,13 @@
 import io from 'socket.io-client';
-import { EVENT_NEED_TO_CONNECT, EVENT_SIGNALING, VIDEO_SIZE } from '../common/constants';
+import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, VIDEO_SIZE } from '../common/constants';
 
 export default class ClientApp{
-  constructor({localVideo,remoteVideo}){
+  constructor({localVideo,setRemoteList}){
     Object.assign(this,{
       localVideo,
-      remoteVideo,
+      setRemoteList,
     })
+    this.remoteList=[];
     this.bindMap = new Map();
     this.peerConnectionMap = new Map();
     this.setupPromise = this.setupAsync();
@@ -35,6 +36,7 @@ export default class ClientApp{
     socket.on("connect",this.getBind("onConnect"));
 
     socket.on(EVENT_NEED_TO_CONNECT,this.getBind("onNeedToConnectAsync"));
+    socket.on(EVENT_NEED_TO_DISCONNECT,this.getBind("onNeedToDisconnectAsync"));
     socket.on(EVENT_SIGNALING,this.getBind("onSignalingAsync"));
     
 
@@ -65,7 +67,6 @@ export default class ClientApp{
         resolve();
       };
     });
-    localVideo.play();
 
 
     Object.assign(this, {
@@ -83,9 +84,14 @@ export default class ClientApp{
   async destroyPeerConnectionAsync({peerId}){
     const peerConnection=this.peerConnectionMap.get(peerId);
     if(peerConnection){
-      console.log("destroy!");
-      //TODO destroy
+      console.log(`close connection: ${peerId}`);
+      peerConnection.close();
+      this.peerConnectionMap.delete(peerId);
     }
+    //useStateの都合で新しくArrayを作る必要がある。
+    this.remoteList=this.remoteList.filter((remote)=>remote.peerId!=peerId);
+    this.setRemoteList(this.remoteList);
+
   }
   async setupPeerConnectionOfferAsync({peerId}){
     const { socket } = this;
@@ -137,9 +143,13 @@ export default class ClientApp{
       ]
     });
 
-    const remoteStream=new MediaStream();
-    remoteVideo.srcObject=remoteStream;
-    remoteVideo.play();
+    const remote={
+      peerId,
+      stream:new MediaStream(),
+    };
+    //useStateの都合で新しくArrayを作る必要がある。
+    this.remoteList=this.remoteList.concat([remote]);
+    this.setRemoteList(this.remoteList);
 
     Object.assign(peerConnection,{
       onconnectionstatechange:()=>{
@@ -157,14 +167,14 @@ export default class ClientApp{
       },
       ontrack:(event)=>{
         console.log("ontrack");
-        remoteStream.addTrack(event.track);
+        remote.stream.addTrack(event.track);
       },
       onnegotiationneeded:()=>{
         console.log("onnegotiationneeded");
       },
       onremovetrack:(event)=>{
         console.log("onremovetrack");
-        remoteStream.removeTrack(event.track);
+        remote.stream.removeTrack(event.track);
       },
       oniceconnectionstatechange:()=>{
         console.log(`oniceconnectionstatechange: ${peerConnection.iceConnectionState}`);
@@ -197,6 +207,13 @@ export default class ClientApp{
       peerId:id,
     });
   }
+  async onNeedToDisconnectAsync({id}){
+    console.log("ClientApp#onNeedToDisconnectAsync",id);
+    await this.destroyPeerConnectionAsync({
+      peerId:id,
+    });
+  }
+
   async onOfferAsync({from,sdp}){
     console.log("ClientApp#onOfferAsync",from,sdp);
     await this.setupPeerConnectionAnswerAsync({

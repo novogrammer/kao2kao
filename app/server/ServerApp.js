@@ -3,7 +3,7 @@ import express from "express";
 import * as http from "http";
 import socketIo from "socket.io";
 import next from "next";
-import { EVENT_NEED_TO_CONNECT, EVENT_SIGNALING, FPS_SERVER } from "../common/constants";
+import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, FPS_SERVER } from "../common/constants";
 
 const port = 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -58,6 +58,9 @@ export default class ServerApp{
 
     socket.on("disconnect", (reason) => {
       console.log("disconnect reason:" + reason);
+      socket.broadcast.emit(EVENT_NEED_TO_DISCONNECT,{
+        id:socket.id,
+      });
     });
 
     socket.on(EVENT_SIGNALING,(data)=>{
