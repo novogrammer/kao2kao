@@ -2,9 +2,10 @@ import io from 'socket.io-client';
 import { EVENT_NEED_TO_CONNECT, EVENT_SIGNALING, VIDEO_SIZE } from '../common/constants';
 
 export default class ClientApp{
-  constructor({video}){
+  constructor({localVideo,remoteVideo}){
     Object.assign(this,{
-      video,
+      localVideo,
+      remoteVideo,
     })
     this.bindMap = new Map();
     this.peerConnectionMap = new Map();
@@ -48,7 +49,7 @@ export default class ClientApp{
   }
 
   async setupCameraAsync() {
-    const { video } = this;
+    const { localVideo } = this;
     const stream = await navigator.mediaDevices.getUserMedia({
       'audio': false,
       'video': {
@@ -57,14 +58,14 @@ export default class ClientApp{
         height: VIDEO_SIZE
       },
     });
-    video.srcObject = stream;
+    localVideo.srcObject = stream;
 
     await new Promise((resolve) => {
-      video.onloadedmetadata = () => {
+      localVideo.onloadedmetadata = () => {
         resolve();
       };
     });
-    video.play();
+    localVideo.play();
 
 
     Object.assign(this, {
@@ -127,7 +128,7 @@ export default class ClientApp{
 
   }
   createPeerConnection(peerId){
-    const {stream, socket}=this;
+    const {stream, socket,remoteVideo}=this;
     const peerConnection = new RTCPeerConnection({
       iceServers: [
         {
@@ -135,6 +136,11 @@ export default class ClientApp{
         }
       ]
     });
+
+    const remoteStream=new MediaStream();
+    remoteVideo.srcObject=remoteStream;
+    remoteVideo.play();
+
     Object.assign(peerConnection,{
       onicecandidate:(event)=>{
         const {candidate}=event;
@@ -146,14 +152,16 @@ export default class ClientApp{
         });
     
       },
-      ontrack:()=>{
+      ontrack:(event)=>{
         console.log("ontrack");
+        remoteStream.addTrack(event.track);
       },
       onnegotiationneeded:()=>{
         console.log("onnegotiationneeded");
       },
-      onremovetrack:()=>{
+      onremovetrack:(event)=>{
         console.log("onremovetrack");
+        remoteStream.removeTrack(event.track);
       },
       oniceconnectionstatechange:()=>{
         console.log(`oniceconnectionstatechange: ${peerConnection.iceConnectionState}`);

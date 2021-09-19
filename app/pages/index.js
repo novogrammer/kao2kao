@@ -5,14 +5,18 @@ import ClientApp from "../client/ClientApp";
 
 export default function Home() {
   const clientAppRef=useRef(null);
-  const videoRef=useRef(null);
+  const localVideoRef=useRef(null);
+  //TODO n個対応
+  const remoteVideoRef=useRef(null);
 
 
 
   useMount(async ()=>{
-    const video=videoRef.current;
+    const localVideo=localVideoRef.current;
+    const remoteVideo=remoteVideoRef.current;
     const clientApp=new ClientApp({
-      video,
+      localVideo,
+      remoteVideo,
     });
     window.clientApp=clientApp;
     clientAppRef.current=clientApp;
@@ -32,7 +36,8 @@ export default function Home() {
       </Head>
 
       <main>
-        <video ref={videoRef} playsInline />
+      <video ref={localVideoRef} playsInline muted />
+      <video ref={remoteVideoRef} playsInline />
       </main>
 
     </div>
