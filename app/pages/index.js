@@ -51,8 +51,10 @@ export default function Home({iceServers}) {
 export async function getServerSideProps(context){
   const iceServers=[
     {
-      urls: process.env.STUN_SERVER_URI,
-    }
+      urls: process.env.TURN_SERVER_URI,
+      username:process.env.TURN_SERVER_USER,
+      credential:process.env.TURN_SERVER_PASSWORD,
+    },
   ];
 
   return {

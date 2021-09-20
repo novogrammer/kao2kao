@@ -5,9 +5,12 @@ WebRTCで3Dビデオチャットをする（予定）
 ## 環境構築
 
 ### .envの作成
-自分のSTUNサーバーを指定しておく
+自分のTURNサーバーを指定しておく
 ```
-STUN_SERVER_URI="stun:example.com:3478"
+TURN_SERVER_URI="turn:example.com:3478"
+TURN_SERVER_USER="user"
+TURN_SERVER_PASSWORD="password"
+
 ```
 
 

@@ -9,6 +9,8 @@ services:
       - "--external-ip=$$(detect-external-ip)"
       - "--min-port=49160"
       - "--max-port=49200"
+      - "--lt-cred-mech"
+      - "--user ${TURN_SERVER_USER}:${TURN_SERVER_PASSWORD}"
     restart: always
     ports:
       - "3478:3478/tcp"
@@ -21,7 +23,9 @@ services:
     build: ./app
     restart: always
     environment:
-      - STUN_SERVER_URI=${STUN_SERVER_URI}
+      - TURN_SERVER_URI=${TURN_SERVER_URI}
+      - TURN_SERVER_USER=${TURN_SERVER_USER}
+      - TURN_SERVER_PASSWORD=${TURN_SERVER_PASSWORD}
     ports:
       - 3000:3000
     depends_on:
