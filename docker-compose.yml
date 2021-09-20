@@ -5,11 +5,14 @@ services:
   coturn:
     image: coturn/coturn:4.5.2-r5-debian
     command:
+      # - "--verbose"
+      # - "--Verbose"
       - "--log-file=stdout"
       - "--external-ip=$$(detect-external-ip)"
       - "--min-port=49160"
       - "--max-port=49200"
       - "--lt-cred-mech"
+      - "--realm kao2kao"
       - "--user ${TURN_SERVER_USER}:${TURN_SERVER_PASSWORD}"
     restart: always
     ports:
