@@ -1,11 +1,13 @@
 import io from 'socket.io-client';
 import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, VIDEO_SIZE } from '../common/constants';
 
+
 export default class ClientApp{
-  constructor({localVideo,setRemoteList}){
+  constructor({localVideo,setRemoteList,STUN_SERVER_URI}){
     Object.assign(this,{
       localVideo,
       setRemoteList,
+      STUN_SERVER_URI,
     })
     this.remoteList=[];
     this.bindMap = new Map();
@@ -138,7 +140,7 @@ export default class ClientApp{
     const peerConnection = new RTCPeerConnection({
       iceServers: [
         {
-          urls: process.env.NEXT_PUBLIC_STUN_SERVER_URI,
+          urls: this.STUN_SERVER_URI,
         }
       ]
     });

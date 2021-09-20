@@ -21,7 +21,7 @@ services:
     build: ./app
     restart: always
     environment:
-      - NEXT_PUBLIC_STUN_SERVER_URI=${STUN_SERVER_URI}
+      - STUN_SERVER_URI=${STUN_SERVER_URI}
     ports:
       - 3000:3000
     depends_on:

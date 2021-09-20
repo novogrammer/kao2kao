@@ -3,19 +3,22 @@ import { useRef ,useState} from 'react';
 import { useMount,useUnmount } from "react-use";
 import ClientApp from "../client/ClientApp";
 import RemoteVideo from '../components/RemoteVideo';
+import getConfig from "next/config";
+const { publicRuntimeConfig } = getConfig();
 
-export default function Home() {
+
+export default function Home({STUN_SERVER_URI}) {
   const clientAppRef=useRef(null);
   const localVideoRef=useRef(null);
   const [remoteIsMuted,setRemoteIsMuted]=useState(true);
   const [remoteList,setRemoteList]=useState([]);
-
 
   useMount(async ()=>{
     const localVideo=localVideoRef.current;
     const clientApp=new ClientApp({
       localVideo,
       setRemoteList,
+      STUN_SERVER_URI,
     });
     window.clientApp=clientApp;
     clientAppRef.current=clientApp;
@@ -43,4 +46,13 @@ export default function Home() {
 
     </div>
   )
+}
+
+export async function getServerSideProps(context){
+  const STUN_SERVER_URI=process.env.STUN_SERVER_URI;
+  return {
+    props:{
+      STUN_SERVER_URI
+    },
+  };
 }
