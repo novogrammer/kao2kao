@@ -7,8 +7,6 @@ WebRTCで3Dビデオチャットをする（予定）
 ### .envの作成
 自分のTURNサーバーを指定しておく
 ```
-#開発環境では空にしておく
-TURN_SERVER_EXTERNAL_IP=""
 TURN_SERVER_URI="turn:example.com:3478"
 TURN_SERVER_USER="user"
 TURN_SERVER_PASSWORD="password"
