@@ -7,7 +7,7 @@ import getConfig from "next/config";
 const { publicRuntimeConfig } = getConfig();
 
 
-export default function Home({STUN_SERVER_URI}) {
+export default function Home({iceServers}) {
   const clientAppRef=useRef(null);
   const localVideoRef=useRef(null);
   const [remoteIsMuted,setRemoteIsMuted]=useState(true);
@@ -18,7 +18,7 @@ export default function Home({STUN_SERVER_URI}) {
     const clientApp=new ClientApp({
       localVideo,
       setRemoteList,
-      STUN_SERVER_URI,
+      iceServers,
     });
     window.clientApp=clientApp;
     clientAppRef.current=clientApp;
@@ -49,10 +49,15 @@ export default function Home({STUN_SERVER_URI}) {
 }
 
 export async function getServerSideProps(context){
-  const STUN_SERVER_URI=process.env.STUN_SERVER_URI;
+  const iceServers=[
+    {
+      urls: process.env.STUN_SERVER_URI,
+    }
+  ];
+
   return {
     props:{
-      STUN_SERVER_URI
+      iceServers,
     },
   };
 }

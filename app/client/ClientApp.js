@@ -3,11 +3,11 @@ import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, VIDEO
 
 
 export default class ClientApp{
-  constructor({localVideo,setRemoteList,STUN_SERVER_URI}){
+  constructor({localVideo,setRemoteList,iceServers}){
     Object.assign(this,{
       localVideo,
       setRemoteList,
-      STUN_SERVER_URI,
+      iceServers,
     })
     this.remoteList=[];
     this.bindMap = new Map();
@@ -136,13 +136,9 @@ export default class ClientApp{
 
   }
   createPeerConnection(peerId){
-    const {stream, socket,remoteVideo}=this;
+    const {stream, socket,iceServers}=this;
     const peerConnection = new RTCPeerConnection({
-      iceServers: [
-        {
-          urls: this.STUN_SERVER_URI,
-        }
-      ]
+      iceServers,
     });
 
     const remote={
