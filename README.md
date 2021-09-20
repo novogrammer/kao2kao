@@ -5,8 +5,9 @@ WebRTCで3Dビデオチャットをする（予定）
 ## 環境構築
 
 ### .envの作成
+自分のSTUNサーバーを指定しておく
 ```
-#まだ中身はない
+STUN_SERVER_URI="stun:example.com:3478"
 ```
 
 

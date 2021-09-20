@@ -138,7 +138,7 @@ export default class ClientApp{
     const peerConnection = new RTCPeerConnection({
       iceServers: [
         {
-          urls: "stun:127.0.0.1:3478",
+          urls: process.env.NEXT_PUBLIC_STUN_SERVER_URI,
         }
       ]
     });
