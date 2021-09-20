@@ -5,7 +5,7 @@ services:
   coturn:
     image: coturn/coturn:4.5.2-r5-debian
     command:
-      # - "--verbose"
+      - "--verbose"
       # - "--Verbose"
       - "--log-file=stdout"
       # - "--external-ip=$$(detect-external-ip)"
