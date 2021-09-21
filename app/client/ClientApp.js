@@ -139,6 +139,7 @@ export default class ClientApp{
     const {stream, socket,iceServers}=this;
     const peerConnection = new RTCPeerConnection({
       iceServers,
+      // iceTransportPolicy:"relay",
     });
 
     const remote={

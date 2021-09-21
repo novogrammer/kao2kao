@@ -4,10 +4,15 @@ services:
 
   coturn:
     image: coturn/coturn:4.5.2-r5-debian
+    # image: instrumentisto/coturn:4.5.2
+    # image: instrumentisto/coturn:4.5.1
     command:
       - "--verbose"
       # - "--Verbose"
       - "--log-file=stdout"
+      # - "--allow-loopback-peers"
+      # - "--no-cli"
+      # - "--server-relay"
       - "--listening-ip=0.0.0.0"
       - "--relay-ip=0.0.0.0"
       - "--external-ip=$$(detect-external-ip)"
