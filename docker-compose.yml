@@ -12,7 +12,7 @@ services:
       - "--verbose"
       # - "--Verbose"
       - "--log-file=stdout"
-      - "--allow-loopback-peers"
+      # - "--allow-loopback-peers"
       # - "--no-multicast-peers"
       - "--no-cli"
       # - "--server-relay"
@@ -29,7 +29,7 @@ services:
       - "--lt-cred-mech"
       - "--realm kao2kao.kawamo.to"
       - "--server-name kao2kao.kawamo.to"
-      - "--allowed-peer-ip=0.0.0.0-255.255.255.255"
+      # - "--allowed-peer-ip=0.0.0.0-255.255.255.255"
       - "--user ${TURN_SERVER_USER}:${TURN_SERVER_PASSWORD}"
     restart: always
     ports:
