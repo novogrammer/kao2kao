@@ -4,22 +4,32 @@ services:
 
   coturn:
     image: coturn/coturn:4.5.2-r5-debian
+    # image: coturn/coturn:4.5.2-r5-alpine
     # image: instrumentisto/coturn:4.5.2
     # image: instrumentisto/coturn:4.5.1
     command:
+      - "-n"
       - "--verbose"
       # - "--Verbose"
       - "--log-file=stdout"
-      # - "--allow-loopback-peers"
-      # - "--no-cli"
+      - "--allow-loopback-peers"
+      # - "--no-multicast-peers"
+      - "--no-cli"
       # - "--server-relay"
+      - "--fingerprint"
+      - "--no-tls"
+      - "--no-dtls"
+      # - "--stun-only"
+      # - "--no-stun"
       - "--listening-ip=0.0.0.0"
       - "--relay-ip=0.0.0.0"
       - "--external-ip=$$(detect-external-ip)"
       - "--min-port=49160"
       - "--max-port=49200"
       - "--lt-cred-mech"
-      - "--realm kao2kao"
+      - "--realm kao2kao.kawamo.to"
+      - "--server-name kao2kao.kawamo.to"
+      - "--allowed-peer-ip=0.0.0.0-255.255.255.255"
       - "--user ${TURN_SERVER_USER}:${TURN_SERVER_PASSWORD}"
     restart: always
     ports:
