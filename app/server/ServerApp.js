@@ -3,7 +3,7 @@ import express from "express";
 import * as http from "http";
 import socketIo from "socket.io";
 import next from "next";
-import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, FPS_SERVER } from "../common/constants";
+import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, FPS_SERVER, ROOM_SIMPLE } from "../common/constants";
 
 const port = 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -50,19 +50,9 @@ export default class ServerApp{
     });
 
   }
-  async onConnectAsync(socket) {
-    console.log("ServerApp#onConnect");
+  async setupSimpleRoomAsync(socket){
+    console.log("ServerApp#setupSimpleRoomAsync");
     const {io} = this;
-    const { handshake } = socket;
-    // const { room } = handshake.query;
-
-    socket.on("disconnect", (reason) => {
-      console.log("disconnect reason:" + reason);
-      socket.broadcast.emit(EVENT_NEED_TO_DISCONNECT,{
-        peerId:socket.id,
-      });
-    });
-
     socket.on(EVENT_SIGNALING,(data)=>{
       data.from=socket.id;
       console.log(`${EVENT_SIGNALING} ${data.type} [${data.from} -> ${data.to}]`);
@@ -81,6 +71,29 @@ export default class ServerApp{
         });
       }
     }
+
+  }
+  async onConnectAsync(socket) {
+    console.log("ServerApp#onConnectAsync");
+    const { handshake } = socket;
+    const { room } = handshake.query;
+
+    socket.on("disconnect", (reason) => {
+      console.log("disconnect reason:" + reason);
+      socket.broadcast.emit(EVENT_NEED_TO_DISCONNECT,{
+        peerId:socket.id,
+      });
+    });
+
+    switch(room){
+      case ROOM_SIMPLE:
+        await this.setupSimpleRoomAsync(socket);
+        break;
+      default:
+        console.log(`unknown room: ${room}`);
+        break;
+    }
+
 
   }
   onTick(){

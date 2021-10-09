@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, VIDEO_SIZE } from '../common/constants';
+import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, ROOM_SIMPLE, VIDEO_SIZE } from '../common/constants';
 
 
 export default class SimpleClientApp{
@@ -31,7 +31,11 @@ export default class SimpleClientApp{
     await this.destroyCameraAsync();
   }
   setupSocketIo(){
-    const options={};
+    const options={
+      query:{
+        room:ROOM_SIMPLE,
+      },
+    };
     this.socket=io(options);
     const {socket}=this;
 
