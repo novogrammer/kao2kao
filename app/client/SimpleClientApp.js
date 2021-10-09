@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, VIDEO_SIZE } from '../common/constants';
 
 
-export default class ClientApp{
+export default class SimpleClientApp{
   constructor({localVideo,setRemoteList,iceServers}){
     Object.assign(this,{
       localVideo,
