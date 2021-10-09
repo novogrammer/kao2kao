@@ -5,7 +5,8 @@ WebRTCで3Dビデオチャットをする（予定）
 ## 環境構築
 
 ### .envの作成
-自分のTURNサーバーを指定しておく
+自分のTURNサーバー（coturnコンテナ）を指定しておく
+localhostの場合relayが動作しない点に注意。relayが動かなくても開発には問題なし。
 ```
 TURN_SERVER_URI="turn:example.com:3478"
 TURN_SERVER_USER="user"
