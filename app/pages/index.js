@@ -26,6 +26,10 @@ export default function Home({iceServers}) {
     const clientApp=clientAppRef.current;
     await clientApp.destroyAsync();
   });
+  const onClickJoin=()=>{
+    const clientApp=clientAppRef.current;
+    clientApp.onClickJoin();
+  }
 
   return (
     <div>
@@ -37,6 +41,7 @@ export default function Home({iceServers}) {
       <label>remoteIsMuted <input type="checkbox" checked={remoteIsMuted} onChange={()=>setRemoteIsMuted(!remoteIsMuted)}/></label>
       <main>
       <video ref={localVideoRef} autoPlay playsInline muted />
+      <button onClick={onClickJoin}>join</button>
       </main>
 
     </div>
