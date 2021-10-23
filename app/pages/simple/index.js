@@ -3,8 +3,8 @@ import { useRef ,useState} from 'react';
 import { useMount,useUnmount } from "react-use";
 import SimpleClientApp from "../../client/SimpleClientApp";
 import RemoteVideo from '../../components/RemoteVideo';
-import getConfig from "next/config";
-const { publicRuntimeConfig } = getConfig();
+// import getConfig from "next/config";
+// const { publicRuntimeConfig } = getConfig();
 
 
 export default function Home({iceServers}) {
