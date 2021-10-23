@@ -11,13 +11,11 @@ export default function Home({iceServers}) {
   const clientAppRef=useRef(null);
   const localVideoRef=useRef(null);
   const [remoteIsMuted,setRemoteIsMuted]=useState(true);
-  const [remoteList,setRemoteList]=useState([]);
 
   useMount(async ()=>{
     const localVideo=localVideoRef.current;
     const clientApp=new MainClientApp({
       localVideo,
-      setRemoteList,
       iceServers,
     });
     window.clientApp=clientApp;
@@ -39,9 +37,6 @@ export default function Home({iceServers}) {
       <label>remoteIsMuted <input type="checkbox" checked={remoteIsMuted} onChange={()=>setRemoteIsMuted(!remoteIsMuted)}/></label>
       <main>
       <video ref={localVideoRef} autoPlay playsInline muted />
-      <>
-        {remoteList.map((remote)=><RemoteVideo key={remote.peerId} stream={remote.stream} muted={remoteIsMuted} />)}
-      </>
       </main>
 
     </div>
