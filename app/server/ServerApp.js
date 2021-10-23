@@ -3,7 +3,7 @@ import express from "express";
 import * as http from "http";
 import socketIo from "socket.io";
 import next from "next";
-import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, FPS_SERVER, ROOM_SIMPLE } from "../common/constants";
+import { EVENT_JOIN, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, FPS_SERVER, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
 
 const port = 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -76,6 +76,19 @@ export default class ServerApp{
     }
 
   }
+  async setupWaitingRoomAsync(socket){
+    console.log("ServerApp#setupWaitingRoomAsync");
+    const {io} = this;
+
+    socket.join(ROOM_WAITING);
+
+    socket.on(EVENT_JOIN,(data,callback)=>{
+      console.log(EVENT_JOIN,data);
+      callback(true);
+    });
+
+
+  }
   async onConnectAsync(socket) {
     console.log("ServerApp#onConnectAsync");
     const { handshake } = socket;
@@ -91,6 +104,9 @@ export default class ServerApp{
     switch(room){
       case ROOM_SIMPLE:
         await this.setupSimpleRoomAsync(socket);
+        break;
+      case ROOM_WAITING:
+        await this.setupWaitingRoomAsync(socket);
         break;
       default:
         console.log(`unknown room: ${room}`);

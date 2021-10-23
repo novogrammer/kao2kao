@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useRef ,useState} from 'react';
 import { useMount,useUnmount } from "react-use";
-import SimpleClientApp from "../client/SimpleClientApp";
+import MainClientApp from '../client/MainClientApp';
 import RemoteVideo from '../components/RemoteVideo';
 import getConfig from "next/config";
 const { publicRuntimeConfig } = getConfig();
@@ -15,7 +15,7 @@ export default function Home({iceServers}) {
 
   useMount(async ()=>{
     const localVideo=localVideoRef.current;
-    const clientApp=new SimpleClientApp({
+    const clientApp=new MainClientApp({
       localVideo,
       setRemoteList,
       iceServers,
