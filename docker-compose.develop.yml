@@ -5,6 +5,7 @@ services:
     command: npm run dev
     volumes:
       # - ./app:/usr/src/app
+      - ./app/common:/usr/src/app/common
       - ./app/pages:/usr/src/app/pages
       - ./app/public:/usr/src/app/public
       - ./app/styles:/usr/src/app/styles

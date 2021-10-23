@@ -1,3 +1,5 @@
+export const IS_DEBUG=true;
+export const FPS_CLIENT = 60;
 export const FPS_SERVER = 10;
 export const FPS_VIDEO = 10;
 export const VIDEO_SIZE = 128;
