@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING,  VIDEO_SIZE } from '../common/constants';
+import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING,  FPS_VIDEO,  VIDEO_SIZE } from '../common/constants';
 
 
 export default class BaseClientApp{
@@ -61,6 +61,7 @@ export default class BaseClientApp{
       'audio': true,
       'video': {
         facingMode: 'user',
+        frameRate: { max: FPS_VIDEO },
         width: VIDEO_SIZE,
         height: VIDEO_SIZE
       },
