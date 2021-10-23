@@ -53,6 +53,9 @@ export default class ServerApp{
   async setupSimpleRoomAsync(socket){
     console.log("ServerApp#setupSimpleRoomAsync");
     const {io} = this;
+
+    socket.join(ROOM_SIMPLE);
+
     socket.on(EVENT_SIGNALING,(data)=>{
       data.from=socket.id;
       console.log(`${EVENT_SIGNALING} ${data.type} [${data.from} -> ${data.to}]`);
@@ -62,7 +65,7 @@ export default class ServerApp{
       }
     });
 
-    const ids = Array.from(await io.allSockets());
+    const ids = Array.from(await io.in(ROOM_SIMPLE).allSockets());
 
     for(let id of ids){
       if(socket.id!=id){
