@@ -7,7 +7,7 @@ import RemoteVideo from '../../components/RemoteVideo';
 // const { publicRuntimeConfig } = getConfig();
 
 
-export default function Home({iceServers}) {
+export default function Simple({iceServers}) {
   const clientAppRef=useRef(null);
   const localVideoRef=useRef(null);
   const [remoteIsMuted,setRemoteIsMuted]=useState(true);
