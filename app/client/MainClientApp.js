@@ -3,6 +3,9 @@ import BaseClientApp from "./BaseClientApp";
 import Stats from "stats.js";
 import * as animate from 'animate';
 import * as THREE from "three";
+import getAmmoLibAsync from "./utils/ammo_loader";
+import AmmoAndThreeConverter from "./utils/AmmoAndThreeConverter";
+import AmmoObjectSweeper from "./utils/AmmoObjectSweeper";
 
 // import { GPUStatsPanel } from 'three/examples/jsm/utils/GPUStatsPanel.js'
 
@@ -16,14 +19,17 @@ export default class MainClientApp extends BaseClientApp{
    */
    async setupAsync(){
     const { GPUStatsPanel }=await import('three/examples/jsm/utils/GPUStatsPanel.js');
+    const AmmoLib=await getAmmoLibAsync();
     this.dynamicImports={
       GPUStatsPanel,
+      AmmoLib,
     };
 
 
     this.setupStats();
     await super.setupAsync();
     await this.setupThreeAsync();
+    await this.setupAmmoAsync();
     this.setupEvents();
   }
   /**
@@ -31,7 +37,8 @@ export default class MainClientApp extends BaseClientApp{
    */
    async destroyAsync(){
     this.destroyEvents();
-    await this.setupThreeAsync();
+    await this.destroyAmmoAsync();
+    await this.destroyThreeAsync();
     await super.destroyAsync();
     this.destroyStats();
   }
@@ -156,6 +163,24 @@ export default class MainClientApp extends BaseClientApp{
       }
     });
   }
+  async setupAmmoAsync(){
+    const {AmmoLib}=this.dynamicImports;
+    const ammoObjectSweeper=new AmmoObjectSweeper(AmmoLib);
+    const ammoAndThreeConverter=new AmmoAndThreeConverter({
+      THREE,
+      AmmoLib,
+    });
+
+    this.ammo={
+      ammoObjectSweeper,
+      ammoAndThreeConverter,
+    };
+  }
+  async destroyAmmoAsync(){
+    const {ammoObjectSweeper}=this.ammo;
+    ammoObjectSweeper.destroyPermanentObjects();
+
+  }
   setupEvents() {
     const { stats } = this;
 
@@ -199,6 +224,8 @@ export default class MainClientApp extends BaseClientApp{
 
   }
   update(){
+    const {ammoObjectSweeper}=this.ammo;
+    ammoObjectSweeper.destroyTemporaryObjects();
 
   }
   render(){
