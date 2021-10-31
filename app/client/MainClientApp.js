@@ -1,4 +1,4 @@
-import { EVENT_JOIN, FPS_CLIENT, IS_DEBUG, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
+import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_REMOVE_PEER, FPS_CLIENT, IS_DEBUG, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
 import BaseClientApp from "./BaseClientApp";
 import Stats from "stats.js";
 import * as animate from 'animate';
@@ -6,6 +6,8 @@ import * as THREE from "three";
 import getAmmoLibAsync from "./utils/ammo_loader";
 import AmmoAndThreeConverter from "./utils/AmmoAndThreeConverter";
 import AmmoObjectSweeper from "./utils/AmmoObjectSweeper";
+import MyPlayer from "./Player/MyPlayer";
+import TheirPlayer from "./Player/TheirPlayer";
 
 // import { GPUStatsPanel } from 'three/examples/jsm/utils/GPUStatsPanel.js'
 
@@ -25,6 +27,8 @@ export default class MainClientApp extends BaseClientApp{
       AmmoLib,
     };
 
+    this.setRemoteList=this.onSetRemoteList.bind(this);
+
 
     this.setupStats();
     await super.setupAsync();
@@ -42,6 +46,22 @@ export default class MainClientApp extends BaseClientApp{
     await super.destroyAsync();
     this.destroyStats();
   }
+  /**
+   * @override
+   */
+   setupSocketIo(){
+    super.setupSocketIo();
+    const {socket}=this;
+    socket.on(EVENT_ADD_PEER,this.getBind("onAddPeerAsync"));
+    socket.on(EVENT_REMOVE_PEER,this.getBind("onRemovePeerAsync"));
+  }
+  /**
+   * @override
+   */
+   destroySocketIo(){
+    super.destroySocketIo();
+  }
+ 
   setupStats() {
     const stats = new Stats();
     // stats.dom.id="Stats";
@@ -99,34 +119,9 @@ export default class MainClientApp extends BaseClientApp{
     const textureCube = loader.load( [ 'posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg' ] );
     textureCube.encoding = THREE.sRGBEncoding;
     scene.background = textureCube;
+    scene.environment=textureCube;
 
 
-    const capsule = new THREE.Mesh(
-      // new RoundedBoxGeometry(),
-      new THREE.CylinderGeometry(0.5,0.5,2,32),
-      new THREE.MeshStandardMaterial({
-        envMap:textureCube,
-        color: 0x00ff00,
-        roughness:0.2,
-        metalness:1,
-      })
-      // new THREE.MeshPhysicalMaterial({
-      //   color: 0xffffff,
-      //   envMap:textureCube,
-      //   roughness:0,
-      //   metalness:0,
-      //   clearcoat: 0.5,
-      //   clearcoatRoughness: 0.1,
-      //   transmission:0.5,
-      //   side: THREE.DoubleSide,
-      //   transparent: true,
-      // })
-    );
-    capsule.position.y=2;
-    capsule.castShadow=true;
-    capsule.receiveShadow=true;
-
-    scene.add( capsule );
     
     const ground = new THREE.Mesh(
       // new THREE.BoxGeometry(100,100,100),
@@ -139,14 +134,14 @@ export default class MainClientApp extends BaseClientApp{
     ground.position.y=-15;
     ground.receiveShadow=true;
 
-
-
     this.three={
       clock,
       scene,
       camera,
       renderer,
       gpuPanel,
+      myPlayer:null,
+      theirPlayerList:[],
     };
   
   }
@@ -215,6 +210,16 @@ export default class MainClientApp extends BaseClientApp{
   }
 
   onClickJoin(){
+    const {localVideo}=this;
+    const {scene}=this.three;
+    const myPlayer=new MyPlayer();
+    scene.add(myPlayer);
+    myPlayer.setVideo(localVideo);
+
+    Object.assign(this.three,{
+      myPlayer,
+    });
+
     const {socket}=this;
     socket.emit(EVENT_JOIN,{
       room:ROOM_MAIN,
@@ -258,4 +263,62 @@ export default class MainClientApp extends BaseClientApp{
     renderer.setSize(size.width, size.height);
 
   }
+  onSetRemoteList(){
+    console.log("MainClientApp#onSetRemoteList");
+    console.log(`this.remoteList.length:${this.remoteList.length}`);
+    // this.remoteList
+    const {theirPlayerList}=this.three;
+    const previousPeerIdList=this.previousRemoteList.map((theirPlayer)=>theirPlayer.peerId);
+    const currentPeerIdList=this.remoteList.map((remote)=>remote.peerId);
+    const removedPeerIdList=previousPeerIdList.filter(
+      (previousPeerId)=>!currentPeerIdList.includes(previousPeerId)
+    );
+    const addedPeerIdList=currentPeerIdList.filter(
+      (currentPeerId)=>!previousPeerIdList.includes(currentPeerId)
+    );
+    for(let removedPeerId of removedPeerIdList){
+      const theirPlayer=theirPlayerList.find((theirPlayer)=>theirPlayer.peerId==removedPeerId);
+      if(theirPlayer){
+        theirPlayer.setVideo(null);
+      }
+    }
+    for(let addedPeerId of addedPeerIdList){
+      const theirPlayer=theirPlayerList.find((theirPlayer)=>theirPlayer.peerId==addedPeerId);
+      if(theirPlayer){
+        const remote=this.remoteList.find((remote)=>remote.peerId==addedPeerId);
+        const video=document.createElement("video");
+        video.autoplay=true;
+        video.playsinline=true;
+        video.style="position:relative";
+        // document.body.appendChild(video);
+        theirPlayer.setVideo(video);
+        video.srcObject=remote.stream;
+        console.log("new video");
+      }else{
+        console.error("theirPlayer==null");
+      }
+    }
+      
+  }
+
+  async onAddPeerAsync({peerId}){
+    console.log("MainClientApp#onAddPeerAsync",peerId);
+    const {theirPlayerList,scene}=this.three;
+    const theirPlayer=new TheirPlayer(peerId);
+    theirPlayer.position.x=1;
+    theirPlayerList.push(theirPlayer);
+    scene.add(theirPlayer);
+    
+  }
+  async onRemovePeerAsync({peerId}){
+    console.log("MainClientApp#onRemovePeerAsync",peerId);
+    const {theirPlayerList,scene}=this.three;
+
+    const theirPlayer=theirPlayerList.find((theirPlayer)=>theirPlayer.peerId==peerId);
+    scene.remove(theirPlayer);
+    this.three.theirPlayerList=theirPlayerList.filter((theirPlayer)=>theirPlayer.peerId!=peerId);
+    
+  }
+
+
 }

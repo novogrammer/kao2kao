@@ -3,7 +3,7 @@ import express from "express";
 import * as http from "http";
 import socketIo from "socket.io";
 import next from "next";
-import { EVENT_JOIN, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING, FPS_SERVER, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
+import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_REMOVE_PEER, EVENT_SIGNALING, FPS_SERVER, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
 
 const port = 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -57,6 +57,15 @@ export default class ServerApp{
 
     socket.join(room);
 
+    socket.on("disconnect", (reason) => {
+      console.log("disconnect reason:" + reason);
+
+      socket.to(room).emit(EVENT_NEED_TO_DISCONNECT,{
+        peerId:socket.id,
+      });
+    });
+
+
     socket.on(EVENT_SIGNALING,(data)=>{
       data.from=socket.id;
       console.log(`${EVENT_SIGNALING} ${data.type} [${data.from} -> ${data.to}]`);
@@ -108,6 +117,18 @@ export default class ServerApp{
     const room=ROOM_MAIN;
     socket.join(room);
 
+    socket.on("disconnect", (reason) => {
+      console.log("disconnect reason:" + reason);
+      socket.to(room).emit(EVENT_REMOVE_PEER,{
+        peerId:socket.id,
+      });
+
+      socket.to(room).emit(EVENT_NEED_TO_DISCONNECT,{
+        peerId:socket.id,
+      });
+    });
+
+
     socket.on(EVENT_SIGNALING,(data)=>{
       data.from=socket.id;
       console.log(`${EVENT_SIGNALING} ${data.type} [${data.from} -> ${data.to}]`);
@@ -118,9 +139,22 @@ export default class ServerApp{
     });
 
     const ids = Array.from(await io.in(room).allSockets());
-
     for(let id of ids){
       if(socket.id!=id){
+        // 新しく来た人へ既にいる人を教える
+        socket.emit(EVENT_ADD_PEER,{
+            peerId:id,
+          });
+      }else{
+        // 既にいる人へ新しく来た人を教える
+        socket.to(room).emit(EVENT_ADD_PEER,{
+          peerId:id,
+        });
+      }
+    }
+    for(let id of ids){
+      if(socket.id!=id){
+        // 新しく来た人が既にいる人につなぐ
         socket.emit(EVENT_NEED_TO_CONNECT,{
           peerId:id,
         });
@@ -132,13 +166,6 @@ export default class ServerApp{
     console.log("ServerApp#onConnectAsync");
     const { handshake } = socket;
     const { room } = handshake.query;
-
-    socket.on("disconnect", (reason) => {
-      console.log("disconnect reason:" + reason);
-      socket.broadcast.emit(EVENT_NEED_TO_DISCONNECT,{
-        peerId:socket.id,
-      });
-    });
 
     switch(room){
       case ROOM_SIMPLE:

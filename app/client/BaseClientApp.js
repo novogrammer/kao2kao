@@ -11,6 +11,7 @@ export default class BaseClientApp{
       room,
       view,
     });
+    this.previousRemoteList=[];
     this.remoteList=[];
     this.bindMap = new Map();
     this.peerConnectionMap = new Map();
@@ -96,6 +97,7 @@ export default class BaseClientApp{
       this.peerConnectionMap.delete(peerId);
     }
     //useStateの都合で新しくArrayを作る必要がある。
+    this.previousRemoteList=this.remoteList;
     this.remoteList=this.remoteList.filter((remote)=>remote.peerId!=peerId);
     this.setRemoteList(this.remoteList);
 
@@ -152,6 +154,7 @@ export default class BaseClientApp{
       stream:new MediaStream(),
     };
     //useStateの都合で新しくArrayを作る必要がある。
+    this.previousRemoteList=this.remoteList;
     this.remoteList=this.remoteList.concat([remote]);
     this.setRemoteList(this.remoteList);
 

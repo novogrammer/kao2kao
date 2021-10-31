@@ -6,6 +6,8 @@ export const VIDEO_SIZE = 128;
 
 export const EVENT_NEED_TO_CONNECT ="need to connect";
 export const EVENT_NEED_TO_DISCONNECT ="need to disconnect";
+export const EVENT_ADD_PEER="add peer";
+export const EVENT_REMOVE_PEER="remove peer";
 
 export const EVENT_SIGNALING="signaling";
 //返信で可否を返す
