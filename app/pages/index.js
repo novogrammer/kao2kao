@@ -11,7 +11,7 @@ import styles from "../styles/Home.module.scss";
 export default function Home({iceServers}) {
   const clientAppRef=useRef(null);
   const localVideoRef=useRef(null);
-  const [remoteIsMuted,setRemoteIsMuted]=useState(true);
+
   const viewRef=useRef(null);
 
   useMount(async ()=>{
@@ -45,7 +45,6 @@ export default function Home({iceServers}) {
       <div className={styles.background}>
         <canvas ref={viewRef}></canvas>
       </div>
-      <label>remoteIsMuted <input type="checkbox" checked={remoteIsMuted} onChange={()=>setRemoteIsMuted(!remoteIsMuted)}/></label>
       <main>
       <video ref={localVideoRef} autoPlay playsInline muted />
       <button onClick={onClickJoin}>join</button>
