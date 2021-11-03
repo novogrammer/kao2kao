@@ -1,4 +1,4 @@
-import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_REMOVE_PEER, FPS_CLIENT, IS_DEBUG, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
+import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, IS_DEBUG, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
 import BaseClientApp from "./BaseClientApp";
 import Stats from "stats.js";
 import * as animate from 'animate';
@@ -8,6 +8,7 @@ import AmmoAndThreeConverter from "./utils/AmmoAndThreeConverter";
 import AmmoObjectSweeper from "./utils/AmmoObjectSweeper";
 import MyPlayer from "./Player/MyPlayer";
 import TheirPlayer from "./Player/TheirPlayer";
+import PacketThreeConverter from "../libs/PacketThreeConverter";
 
 // import { GPUStatsPanel } from 'three/examples/jsm/utils/GPUStatsPanel.js'
 
@@ -54,6 +55,8 @@ export default class MainClientApp extends BaseClientApp{
     const {socket}=this;
     socket.on(EVENT_ADD_PEER,this.getBind("onAddPeerAsync"));
     socket.on(EVENT_REMOVE_PEER,this.getBind("onRemovePeerAsync"));
+    socket.on(EVENT_THEIR_MOVE,this.getBind("onTheirMoveAsync"));
+    
   }
   /**
    * @override
@@ -80,6 +83,8 @@ export default class MainClientApp extends BaseClientApp{
   }
   async setupThreeAsync(){
     const {GPUStatsPanel}=this.dynamicImports;
+    const packetThreeConverter=new PacketThreeConverter({THREE});
+
     const {stats,view}=this;
     if(IS_DEBUG){
       console.log(`three.js ${THREE.REVISION}`);
@@ -142,6 +147,7 @@ export default class MainClientApp extends BaseClientApp{
       gpuPanel,
       myPlayer:null,
       theirPlayerList:[],
+      packetThreeConverter,
     };
   
   }
@@ -229,8 +235,29 @@ export default class MainClientApp extends BaseClientApp{
 
   }
   update(){
+    const {myPlayer,packetThreeConverter}=this.three;
+    const {socket}=this;
     const {ammoObjectSweeper}=this.ammo;
+
     ammoObjectSweeper.destroyTemporaryObjects();
+
+    if(myPlayer){
+      // myPlayer.position.x+=0.01;
+      // const euler=new THREE.Euler();
+      // euler.x=Math.random()*Math.PI*2;
+      // euler.y=Math.random()*Math.PI*2;
+      // euler.z=Math.random()*Math.PI*2;
+      // myPlayer.quaternion.setFromEuler(euler);
+      const myData={
+        transform:{
+          position:packetThreeConverter.convertVector3ThreeToPacket(myPlayer.position),
+          quaternion:packetThreeConverter.convertQuaternionThreeToPacket(myPlayer.quaternion),
+        },
+      };
+      socket.emit(EVENT_MY_MOVE,myData);
+  
+    }
+    
 
   }
   render(){
@@ -305,7 +332,7 @@ export default class MainClientApp extends BaseClientApp{
     console.log("MainClientApp#onAddPeerAsync",peerId);
     const {theirPlayerList,scene}=this.three;
     const theirPlayer=new TheirPlayer(peerId);
-    theirPlayer.position.x=1;
+    // theirPlayer.position.x=1;
     theirPlayerList.push(theirPlayer);
     scene.add(theirPlayer);
     
@@ -315,9 +342,23 @@ export default class MainClientApp extends BaseClientApp{
     const {theirPlayerList,scene}=this.three;
 
     const theirPlayer=theirPlayerList.find((theirPlayer)=>theirPlayer.peerId==peerId);
-    scene.remove(theirPlayer);
-    this.three.theirPlayerList=theirPlayerList.filter((theirPlayer)=>theirPlayer.peerId!=peerId);
+    if(theirPlayer){
+      scene.remove(theirPlayer);
+      this.three.theirPlayerList=theirPlayerList.filter((theirPlayer)=>theirPlayer.peerId!=peerId);
+    }
     
+  }
+  async onTheirMoveAsync({peerId,transform}){
+    // console.log("MainClientApp#onTheirMoveAsync",peerId);
+    // console.log(peerId,JSON.stringify(transform));
+    const {theirPlayerList,packetThreeConverter}=this.three;
+
+    const theirPlayer=theirPlayerList.find((theirPlayer)=>theirPlayer.peerId==peerId);
+    if(theirPlayer){
+      packetThreeConverter.convertVector3PacketToThree(transform.position,theirPlayer.position);
+      packetThreeConverter.convertQuaternionPacketToThree(transform.quaternion,theirPlayer.quaternion);
+
+    }
   }
 
 

@@ -3,7 +3,9 @@ import express from "express";
 import * as http from "http";
 import socketIo from "socket.io";
 import next from "next";
-import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_REMOVE_PEER, EVENT_SIGNALING, FPS_SERVER, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
+import * as THREE from "three";
+
+import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_REMOVE_PEER, EVENT_SIGNALING, EVENT_THEIR_MOVE, FPS_SERVER, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
 
 const port = 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -92,13 +94,13 @@ export default class ServerApp{
 
     socket.join(ROOM_WAITING);
 
-    socket.on(EVENT_JOIN,(data,callback)=>{
+    socket.on(EVENT_JOIN,async (data,callback)=>{
       console.log(EVENT_JOIN,data);
       const {room}=data;
       switch(room){
         case ROOM_MAIN:
           try{
-            this.setupMainRoomAsync(socket)
+            await this.setupMainRoomAsync(socket);
             callback(true);
           }catch(error){
             callback(false);
@@ -137,6 +139,13 @@ export default class ServerApp{
         socket.to(target).emit(EVENT_SIGNALING,data);
       }
     });
+
+    socket.on(EVENT_MY_MOVE,(myData)=>{
+      const theirData=Object.assign({
+        peerId:socket.id,
+      },myData);
+      socket.to(room).emit(EVENT_THEIR_MOVE,theirData);
+   });
 
     const ids = Array.from(await io.in(room).allSockets());
     for(let id of ids){
