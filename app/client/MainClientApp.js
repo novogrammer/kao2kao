@@ -271,8 +271,11 @@ export default class MainClientApp extends BaseClientApp{
       renderer,
       scene,
       camera,
+      gpuPanel,
     } = this.three;
+    gpuPanel.startQuery();
     renderer.render(scene, camera);
+    gpuPanel.endQuery();
 
   }
   async onTickAsync() {
