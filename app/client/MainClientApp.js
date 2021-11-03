@@ -96,6 +96,11 @@ export default class MainClientApp extends BaseClientApp{
     const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
     camera.position.y = 2;
     camera.position.z = 5;
+
+    const listener=new THREE.AudioListener();
+    camera.add(listener);
+  
+
     const renderer = new THREE.WebGLRenderer( {
       antialias: true,
       canvas:view,
@@ -143,6 +148,7 @@ export default class MainClientApp extends BaseClientApp{
       clock,
       scene,
       camera,
+      listener,
       renderer,
       gpuPanel,
       myPlayer:null,
@@ -294,7 +300,7 @@ export default class MainClientApp extends BaseClientApp{
     console.log("MainClientApp#onSetRemoteList");
     console.log(`this.remoteList.length:${this.remoteList.length}`);
     // this.remoteList
-    const {theirPlayerList}=this.three;
+    const {theirPlayerList,listener}=this.three;
     const previousPeerIdList=this.previousRemoteList.map((theirPlayer)=>theirPlayer.peerId);
     const currentPeerIdList=this.remoteList.map((remote)=>remote.peerId);
     const removedPeerIdList=previousPeerIdList.filter(
@@ -313,14 +319,38 @@ export default class MainClientApp extends BaseClientApp{
       const theirPlayer=theirPlayerList.find((theirPlayer)=>theirPlayer.peerId==addedPeerId);
       if(theirPlayer){
         const remote=this.remoteList.find((remote)=>remote.peerId==addedPeerId);
-        const video=document.createElement("video");
-        video.autoplay=true;
-        video.playsinline=true;
-        video.style="position:relative";
-        // document.body.appendChild(video);
-        theirPlayer.setVideo(video);
-        video.srcObject=remote.stream;
-        console.log("new video");
+
+        const setupVideo=()=>{
+          const sound=new THREE.PositionalAudio(listener);
+          sound.setRefDistance( 3 );// 3[m]
+          sound.setRolloffFactor( 1 );
+          sound.setDistanceModel("exponential");
+  
+          const mediaStreamSource = sound.context.createMediaStreamSource(remote.stream);
+          sound.setNodeSource(mediaStreamSource);
+  
+          theirPlayer.add(sound);
+
+          const video=document.createElement("video");
+          video.autoplay=true;
+          video.playsinline=true;
+          video.muted=true;
+          video.style="position:relative";
+          document.body.appendChild(video);
+          theirPlayer.setVideo(video);
+          video.srcObject=remote.stream;
+          console.log("new video");
+  
+        }
+        // イベントでうまく捕捉できないのでダーティーに対処する
+        const intervalTimerId=setInterval(()=>{
+          const aLength=remote.stream.getAudioTracks().length;
+          const vLength=remote.stream.getVideoTracks().length;
+          if(0<aLength && 0<vLength){
+            setupVideo();
+            clearInterval(intervalTimerId);
+          }
+        },100);
       }else{
         console.error("theirPlayer==null");
       }
