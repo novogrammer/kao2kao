@@ -36,3 +36,38 @@
   font-size:5vmin;
 }
 
+
+.controller{
+  position:fixed;
+  pointer-events: none;
+}
+@mixin button{
+  // position:absolute;
+  pointer-events: auto;
+  width:10vmin;
+  height:10vmin;
+  border-radius: 1vmin;
+  background:rgba(255,255,255,0.5);
+  border:1px solid #000;
+  cursor:pointer;
+  touch-action: none;
+}
+
+.controller__up{
+  @include button();
+}
+.controller__left{
+  @include button();
+
+}
+.controller__down{
+  @include button();
+
+}
+.controller__right{
+  @include button();
+
+}
+
+
+

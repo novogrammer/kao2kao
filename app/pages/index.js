@@ -42,6 +42,24 @@ export default function Home({iceServers}) {
   if(joined){
     cameraClassNames.push(styles["waiting__camera--joined"]);
   }
+  const onButtonDown=(name)=>{
+    const clientApp=clientAppRef.current;
+    clientApp.onButtonDown(name);
+  };
+  const onButtonUp=(name)=>{
+    const clientApp=clientAppRef.current;
+    clientApp.onButtonUp(name);
+  };
+  const onTouchStart=(name,event)=>{
+    event.preventDefault();
+    onButtonDown(name,event);
+  }
+  const onTouchEnd=(name,event)=>{
+    onButtonUp(name,event);
+  }
+  const onTouchCancel=(name,event)=>{
+    onButtonUp(name,event);
+  }
 
   return (
     <div className={styles.home}>
@@ -54,8 +72,14 @@ export default function Home({iceServers}) {
         <canvas ref={viewRef}></canvas>
       </div>
       <div className={styles.waiting}>
-      <video className={cameraClassNames.join(" ")} ref={localVideoRef} autoPlay playsInline muted />
-      {!joined && <button className={styles.waiting__join} onClick={onClickJoin}>join</button>}
+        <video className={cameraClassNames.join(" ")} ref={localVideoRef} autoPlay playsInline muted />
+        {!joined && <button className={styles.waiting__join} onClick={onClickJoin}>join</button>}
+      </div>
+      <div className={styles.controller}>
+      <div className={styles.controller__up} onMouseDown={onButtonDown.bind(null,"ButtonUp")} onMouseUp={onButtonUp.bind(null,"ButtonUp")} onTouchStart={onTouchStart.bind(null,"ButtonUp")} onTouchEnd={onTouchEnd.bind(null,"ButtonUp")} onTouchCancel={onTouchCancel.bind(null,"ButtonUp")}>up</div>
+      <div className={styles.controller__left} onMouseDown={onButtonDown.bind(null,"ButtonLeft")} onMouseUp={onButtonUp.bind(null,"ButtonLeft")} onTouchStart={onTouchStart.bind(null,"ButtonLeft")} onTouchEnd={onTouchEnd.bind(null,"ButtonLeft")} onTouchCancel={onTouchCancel.bind(null,"ButtonLeft")}>left</div>
+      <div className={styles.controller__down} onMouseDown={onButtonDown.bind(null,"ButtonDown")} onMouseUp={onButtonUp.bind(null,"ButtonDown")} onTouchStart={onTouchStart.bind(null,"ButtonDown")} onTouchEnd={onTouchEnd.bind(null,"ButtonDown")} onTouchCancel={onTouchCancel.bind(null,"ButtonDown")}>down</div>
+      <div className={styles.controller__right} onMouseDown={onButtonDown.bind(null,"ButtonRight")} onMouseUp={onButtonUp.bind(null,"ButtonRight")} onTouchStart={onTouchStart.bind(null,"ButtonRight")} onTouchEnd={onTouchEnd.bind(null,"ButtonRight")} onTouchCancel={onTouchCancel.bind(null,"ButtonRight")}>right</div>
       </div>
 
     </div>

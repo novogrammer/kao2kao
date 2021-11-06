@@ -9,6 +9,7 @@ import AmmoObjectSweeper from "./utils/AmmoObjectSweeper";
 import MyPlayer from "./Player/MyPlayer";
 import TheirPlayer from "./Player/TheirPlayer";
 import PacketThreeConverter from "../libs/PacketThreeConverter";
+import ButtonState from "./utils/ButtonState";
 
 // import { GPUStatsPanel } from 'three/examples/jsm/utils/GPUStatsPanel.js'
 
@@ -31,6 +32,16 @@ export default class MainClientApp extends BaseClientApp{
 
     this.setRemoteList=this.onSetRemoteList.bind(this);
 
+    this.buttonStateMap=new Map([
+      ["KeyW",new ButtonState()],
+      ["KeyA",new ButtonState()],
+      ["KeyS",new ButtonState()],
+      ["KeyD",new ButtonState()],
+      ["ButtonUp",new ButtonState()],
+      ["ButtonLeft",new ButtonState()],
+      ["ButtonDown",new ButtonState()],
+      ["ButtonRight",new ButtonState()],
+    ]);
 
     this.setupStats();
     await super.setupAsync();
@@ -196,6 +207,9 @@ export default class MainClientApp extends BaseClientApp{
 
     window.addEventListener("resize", this.getBind("onResize"));
 
+    document.addEventListener("keydown",this.getBind("onKeydown"))
+    document.addEventListener("keyup",this.getBind("onKeyup"))
+
 
     const onTickAsyncInternal = async () => {
       stats.begin();
@@ -221,6 +235,10 @@ export default class MainClientApp extends BaseClientApp{
   destroyEvents() {
     this.animation.pause();
     window.removeEventListener("resize", this.getBind("onResize"));
+
+    document.removeEventListener("keydown",this.getBind("onKeydown"))
+    document.removeEventListener("keyup",this.getBind("onKeyup"))
+
   }
 
   onClickJoin(){
@@ -244,10 +262,21 @@ export default class MainClientApp extends BaseClientApp{
   }
   update(){
     const {myPlayer,packetThreeConverter}=this.three;
-    const {socket}=this;
+    const {socket,buttonStateMap}=this;
     const {ammoObjectSweeper}=this.ammo;
 
     ammoObjectSweeper.destroyTemporaryObjects();
+
+    for(let [name,buttonState] of buttonStateMap){
+      buttonState.update();
+      if(buttonState.isOnDown()){
+        console.log("isOnDown",name);
+      }
+      if(buttonState.isOnUp()){
+        console.log("isOnUp",name);
+      }
+    }
+    
 
     if(myPlayer){
       // myPlayer.position.x+=0.01;
@@ -400,6 +429,37 @@ export default class MainClientApp extends BaseClientApp{
       packetThreeConverter.convertVector3PacketToThree(transform.position,theirPlayer.position);
       packetThreeConverter.convertQuaternionPacketToThree(transform.quaternion,theirPlayer.quaternion);
 
+    }
+  }
+
+  onButtonDown(name){
+    console.log("MainClientApp#onButtonDown",name);
+    const buttonState=this.buttonStateMap.get(name);
+    if(buttonState){
+      buttonState.setNewPressState(true);
+    }
+  }
+  onButtonUp(name){
+    console.log("MainClientApp#onButtonUp",name);
+    const buttonState=this.buttonStateMap.get(name);
+    if(buttonState){
+      buttonState.setNewPressState(false);
+    }
+  }
+  onKeydown(event){
+    console.log("MainClientApp#onKeydown",event);
+    const {code}=event;
+    const buttonState=this.buttonStateMap.get(code);
+    if(buttonState){
+      buttonState.setNewPressState(true);
+    }
+  }
+  onKeyup(event){
+    console.log("MainClientApp#onKeyup",event);
+    const {code}=event;
+    const buttonState=this.buttonStateMap.get(code);
+    if(buttonState){
+      buttonState.setNewPressState(false);
     }
   }
 
