@@ -343,10 +343,13 @@ export default class MainClientApp extends BaseClientApp{
           video.autoplay=true;
           video.playsinline=true;
           video.muted=true;
-          video.style="position:relative";
+          video.style="position:relative;opacity:0;width:1px;height:1px;pointer-events:none;";
           document.body.appendChild(video);
           theirPlayer.setVideo(video);
           video.srcObject=remote.stream;
+          Object.assign(theirPlayer.userData,{
+            video,
+          });
           console.log("new video");
   
         }
@@ -372,7 +375,6 @@ export default class MainClientApp extends BaseClientApp{
     const theirPlayer=new TheirPlayer(peerId);
     theirPlayerList.push(theirPlayer);
     scene.add(theirPlayer);
-    
   }
   async onRemovePeerAsync({peerId}){
     console.log("MainClientApp#onRemovePeerAsync",peerId);
@@ -382,6 +384,9 @@ export default class MainClientApp extends BaseClientApp{
     if(theirPlayer){
       scene.remove(theirPlayer);
       this.three.theirPlayerList=theirPlayerList.filter((theirPlayer)=>theirPlayer.peerId!=peerId);
+
+      const {video}=theirPlayer.userData;
+      document.body.removeChild(video);
     }
     
   }
