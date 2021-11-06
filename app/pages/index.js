@@ -11,6 +11,7 @@ import styles from "../styles/Home.module.scss";
 export default function Home({iceServers}) {
   const clientAppRef=useRef(null);
   const localVideoRef=useRef(null);
+  const [joined,setJoined]=useState(false);
 
   const viewRef=useRef(null);
 
@@ -21,6 +22,7 @@ export default function Home({iceServers}) {
       localVideo,
       iceServers,
       view,
+      setJoined,
     });
     window.clientApp=clientApp;
     clientAppRef.current=clientApp;
@@ -34,6 +36,12 @@ export default function Home({iceServers}) {
     const clientApp=clientAppRef.current;
     clientApp.onClickJoin();
   }
+  const cameraClassNames=[
+    styles["waiting__camera"],
+  ];
+  if(joined){
+    cameraClassNames.push(styles["waiting__camera--joined"]);
+  }
 
   return (
     <div className={styles.home}>
@@ -45,10 +53,10 @@ export default function Home({iceServers}) {
       <div className={styles.background}>
         <canvas ref={viewRef}></canvas>
       </div>
-      <main>
-      <video ref={localVideoRef} autoPlay playsInline muted />
-      <button onClick={onClickJoin}>join</button>
-      </main>
+      <div className={styles.waiting}>
+      <video className={cameraClassNames.join(" ")} ref={localVideoRef} autoPlay playsInline muted />
+      {!joined && <button className={styles.waiting__join} onClick={onClickJoin}>join</button>}
+      </div>
 
     </div>
   )

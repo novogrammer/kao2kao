@@ -11,3 +11,28 @@
   left:0;
   top:0;
 }
+
+.waiting{
+  position:relative;  
+  padding-top:5vmin;
+}
+.waiting__camera{
+  display:block;
+  width:50vmin;
+  height:50vmin;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom:5vmin;
+}
+.waiting__camera--joined{
+  opacity:0;
+  pointer-events: none;
+}
+
+.waiting__join{
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+  font-size:5vmin;
+}
+

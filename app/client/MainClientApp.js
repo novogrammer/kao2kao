@@ -14,8 +14,8 @@ import PacketThreeConverter from "../libs/PacketThreeConverter";
 
 
 export default class MainClientApp extends BaseClientApp{
-  constructor({localVideo,iceServers,view}){
-    super({localVideo,iceServers,room:ROOM_WAITING,view});
+  constructor({localVideo,iceServers,view,setJoined}){
+    super({localVideo,iceServers,room:ROOM_WAITING,view,setJoined});
     this.updateCount=0;
   }
   /**
@@ -238,7 +238,7 @@ export default class MainClientApp extends BaseClientApp{
     socket.emit(EVENT_JOIN,{
       room:ROOM_MAIN,
     },(wasSucceeded)=>{
-      console.log(wasSucceeded);
+      this.setJoined(wasSucceeded);
     });
 
   }
