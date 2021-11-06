@@ -1,4 +1,4 @@
-import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, IS_DEBUG, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
+import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
 import BaseClientApp from "./BaseClientApp";
 import Stats from "stats.js";
 import * as animate from 'animate';
@@ -16,6 +16,7 @@ import PacketThreeConverter from "../libs/PacketThreeConverter";
 export default class MainClientApp extends BaseClientApp{
   constructor({localVideo,iceServers,view}){
     super({localVideo,iceServers,room:ROOM_WAITING,view});
+    this.updateCount=0;
   }
   /**
    * @override
@@ -105,7 +106,8 @@ export default class MainClientApp extends BaseClientApp{
       antialias: true,
       canvas:view,
     } );
-    renderer.setPixelRatio( window.devicePixelRatio );
+    // renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setPixelRatio( 1 );
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.shadowMap.enabled = true;
@@ -260,10 +262,14 @@ export default class MainClientApp extends BaseClientApp{
           quaternion:packetThreeConverter.convertQuaternionThreeToPacket(myPlayer.quaternion),
         },
       };
-      socket.emit(EVENT_MY_MOVE,myData);
+      // socket.emit(EVENT_MY_MOVE,myData);
+      const cpm= FPS_CLIENT / FPS_MESSAGE;
+      if(this.updateCount%cpm==0){
+        socket.emit(EVENT_MY_MOVE,myData);
+      }
   
     }
-    
+    this.updateCount+=1;
 
   }
   render(){
@@ -302,7 +308,6 @@ export default class MainClientApp extends BaseClientApp{
   onSetRemoteList(){
     console.log("MainClientApp#onSetRemoteList");
     console.log(`this.remoteList.length:${this.remoteList.length}`);
-    // this.remoteList
     const {theirPlayerList,listener}=this.three;
     const previousPeerIdList=this.previousRemoteList.map((theirPlayer)=>theirPlayer.peerId);
     const currentPeerIdList=this.remoteList.map((remote)=>remote.peerId);
@@ -365,7 +370,6 @@ export default class MainClientApp extends BaseClientApp{
     console.log("MainClientApp#onAddPeerAsync",peerId);
     const {theirPlayerList,scene}=this.three;
     const theirPlayer=new TheirPlayer(peerId);
-    // theirPlayer.position.x=1;
     theirPlayerList.push(theirPlayer);
     scene.add(theirPlayer);
     
