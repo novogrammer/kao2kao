@@ -61,27 +61,48 @@
   padding-top:2.5vmin;
 }
 
-.controller__up{
+.controller__moveforward{
   @include button();
   left:10vmin;
   bottom:10vmin;
 }
-.controller__left{
+.controller__moveleft{
   @include button();
   left:0vmin;
   bottom:0vmin;
 }
-.controller__down{
+.controller__movebackward{
   @include button();
   left:10vmin;
   bottom:0vmin;
 
 }
-.controller__right{
+.controller__moveright{
   @include button();
   left:20vmin;
   bottom:0vmin;
 }
 
+.controller__cameraup{
+  @include button();
+  right:10vmin;
+  bottom:10vmin;
+}
+.controller__cameraleft{
+  @include button();
+  right:20vmin;
+  bottom:0vmin;
+}
+.controller__cameradown{
+  @include button();
+  right:10vmin;
+  bottom:0vmin;
+
+}
+.controller__cameraright{
+  @include button();
+  right:0vmin;
+  bottom:0vmin;
+}
 
 

@@ -77,30 +77,54 @@ export default function Home({iceServers}) {
         {!joined && <button className={styles.waiting__join} onClick={onClickJoin}>join</button>}
       </div>
       <div className={styles.controller}>
-      <Button
-          className={styles.controller__up}
-          onButtonDown={onButtonDown}
-          onButtonUp={onButtonUp}
-          buttonName="ButtonUp"
-        >up</Button>
         <Button
-          className={styles.controller__left}
+          className={styles.controller__moveforward}
           onButtonDown={onButtonDown}
           onButtonUp={onButtonUp}
-          buttonName="ButtonLeft"
-        >left</Button>
+          buttonName="ButtonMoveForward"
+        >↑</Button>
         <Button
-          className={styles.controller__down}
+          className={styles.controller__moveleft}
           onButtonDown={onButtonDown}
           onButtonUp={onButtonUp}
-          buttonName="ButtonDown"
-        >down</Button>
+          buttonName="ButtonMoveLeft"
+        >←</Button>
         <Button
-          className={styles.controller__right}
+          className={styles.controller__movebackward}
           onButtonDown={onButtonDown}
           onButtonUp={onButtonUp}
-          buttonName="ButtonRight"
-        >right</Button>
+          buttonName="ButtonMoveBackward"
+        >↓</Button>
+        <Button
+          className={styles.controller__moveright}
+          onButtonDown={onButtonDown}
+          onButtonUp={onButtonUp}
+          buttonName="ButtonMoveRight"
+        >→</Button>
+        <Button
+          className={styles.controller__cameraup}
+          onButtonDown={onButtonDown}
+          onButtonUp={onButtonUp}
+          buttonName="ButtonCameraUp"
+        >↑</Button>
+        <Button
+          className={styles.controller__cameraleft}
+          onButtonDown={onButtonDown}
+          onButtonUp={onButtonUp}
+          buttonName="ButtonCameraLeft"
+        >←</Button>
+        <Button
+          className={styles.controller__cameradown}
+          onButtonDown={onButtonDown}
+          onButtonUp={onButtonUp}
+          buttonName="ButtonCameraDown"
+        >↓</Button>
+        <Button
+          className={styles.controller__cameraright}
+          onButtonDown={onButtonDown}
+          onButtonUp={onButtonUp}
+          buttonName="ButtonCameraRight"
+        >→</Button>
       </div>
 
     </div>

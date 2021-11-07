@@ -37,10 +37,18 @@ export default class MainClientApp extends BaseClientApp{
       ["KeyA",new ButtonState()],
       ["KeyS",new ButtonState()],
       ["KeyD",new ButtonState()],
-      ["ButtonUp",new ButtonState()],
-      ["ButtonLeft",new ButtonState()],
-      ["ButtonDown",new ButtonState()],
-      ["ButtonRight",new ButtonState()],
+      ["ArrowUp",new ButtonState()],
+      ["ArrowLeft",new ButtonState()],
+      ["ArrowDown",new ButtonState()],
+      ["ArrowRight",new ButtonState()],
+      ["ButtonMoveForward",new ButtonState()],
+      ["ButtonMoveLeft",new ButtonState()],
+      ["ButtonMoveBackward",new ButtonState()],
+      ["ButtonMoveRight",new ButtonState()],
+      ["ButtonCameraUp",new ButtonState()],
+      ["ButtonCameraLeft",new ButtonState()],
+      ["ButtonCameraDown",new ButtonState()],
+      ["ButtonCameraRight",new ButtonState()],
     ]);
 
     this.setupStats();
