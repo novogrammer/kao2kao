@@ -1,4 +1,4 @@
-import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
+import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, KEY_CODE_ARROW_DOWN, KEY_CODE_ARROW_LEFT, KEY_CODE_ARROW_RIGHT, KEY_CODE_ARROW_UP, KEY_CODE_KEY_A, KEY_CODE_KEY_D, KEY_CODE_KEY_S, KEY_CODE_KEY_W, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
 import BaseClientApp from "./BaseClientApp";
 import Stats from "stats.js";
 import * as animate from 'animate';
@@ -33,22 +33,22 @@ export default class MainClientApp extends BaseClientApp{
     this.setRemoteList=this.onSetRemoteList.bind(this);
 
     this.buttonStateMap=new Map([
-      ["KeyW",new ButtonState()],
-      ["KeyA",new ButtonState()],
-      ["KeyS",new ButtonState()],
-      ["KeyD",new ButtonState()],
-      ["ArrowUp",new ButtonState()],
-      ["ArrowLeft",new ButtonState()],
-      ["ArrowDown",new ButtonState()],
-      ["ArrowRight",new ButtonState()],
-      ["ButtonMoveForward",new ButtonState()],
-      ["ButtonMoveLeft",new ButtonState()],
-      ["ButtonMoveBackward",new ButtonState()],
-      ["ButtonMoveRight",new ButtonState()],
-      ["ButtonCameraUp",new ButtonState()],
-      ["ButtonCameraLeft",new ButtonState()],
-      ["ButtonCameraDown",new ButtonState()],
-      ["ButtonCameraRight",new ButtonState()],
+      [KEY_CODE_KEY_W,new ButtonState()],
+      [KEY_CODE_KEY_A,new ButtonState()],
+      [KEY_CODE_KEY_S,new ButtonState()],
+      [KEY_CODE_KEY_D,new ButtonState()],
+      [KEY_CODE_ARROW_UP,new ButtonState()],
+      [KEY_CODE_ARROW_LEFT,new ButtonState()],
+      [KEY_CODE_ARROW_DOWN,new ButtonState()],
+      [KEY_CODE_ARROW_RIGHT,new ButtonState()],
+      [BUTTON_NAME_MOVE_FORWARD,new ButtonState()],
+      [BUTTON_NAME_MOVE_LEFT,new ButtonState()],
+      [BUTTON_NAME_MOVE_BACKWARD,new ButtonState()],
+      [BUTTON_NAME_MOVE_RIGHT,new ButtonState()],
+      [BUTTON_NAME_CAMERA_UP,new ButtonState()],
+      [BUTTON_NAME_CAMERA_LEFT,new ButtonState()],
+      [BUTTON_NAME_CAMERA_DOWN,new ButtonState()],
+      [BUTTON_NAME_CAMERA_RIGHT,new ButtonState()],
     ]);
 
     this.setupStats();
@@ -269,7 +269,7 @@ export default class MainClientApp extends BaseClientApp{
 
   }
   update(){
-    const {myPlayer,packetThreeConverter}=this.three;
+    const {myPlayer,packetThreeConverter,camera}=this.three;
     const {socket,buttonStateMap}=this;
     const {ammoObjectSweeper}=this.ammo;
 
@@ -287,6 +287,47 @@ export default class MainClientApp extends BaseClientApp{
     
 
     if(myPlayer){
+      const {cameraBase,cameraTarget}=myPlayer.userData;
+      const isSomeDown=(nameList)=>{
+        return nameList.map((name)=>buttonStateMap.get(name).currentPressState).some((currentPressState)=>currentPressState);
+      }
+      if(isSomeDown([KEY_CODE_KEY_W,BUTTON_NAME_MOVE_FORWARD])){
+        const v=new THREE.Vector3(0,0,-1).applyQuaternion(myPlayer.quaternion).multiplyScalar(0.1);
+        myPlayer.position.add(v);
+      }
+      if(isSomeDown([KEY_CODE_KEY_A,BUTTON_NAME_MOVE_LEFT])){
+        const v=new THREE.Vector3(-1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(0.1);
+        myPlayer.position.add(v);
+      }
+      if(isSomeDown([KEY_CODE_KEY_S,BUTTON_NAME_MOVE_BACKWARD])){
+        const v=new THREE.Vector3(0,0,1).applyQuaternion(myPlayer.quaternion).multiplyScalar(0.1);
+        myPlayer.position.add(v);
+      }
+      if(isSomeDown([KEY_CODE_KEY_D,BUTTON_NAME_MOVE_RIGHT])){
+        const v=new THREE.Vector3(1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(0.1);
+        myPlayer.position.add(v);
+      }
+      if(isSomeDown([KEY_CODE_ARROW_UP,BUTTON_NAME_CAMERA_UP])){
+        cameraBase.rotation.x+=0.1;
+      }
+      if(isSomeDown([KEY_CODE_ARROW_LEFT,BUTTON_NAME_CAMERA_LEFT])){
+        myPlayer.rotation.y+=0.1;
+      }
+      if(isSomeDown([KEY_CODE_ARROW_DOWN,BUTTON_NAME_CAMERA_DOWN])){
+        cameraBase.rotation.x-=0.1;
+      }
+      if(isSomeDown([KEY_CODE_ARROW_RIGHT,BUTTON_NAME_CAMERA_RIGHT])){
+        myPlayer.rotation.y-=0.1;
+      }
+
+
+      cameraTarget.updateWorldMatrix(true,false);
+      // なめらかなカメラ追従の仕組みは余裕があれば組み込む
+      cameraTarget.matrixWorld.decompose(
+        camera.position,
+        camera.quaternion,
+        camera.scale
+      );
       // myPlayer.position.x+=0.01;
       // const euler=new THREE.Euler();
       // euler.x=Math.random()*Math.PI*2;

@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { useRef ,useState} from 'react';
 import { useMount,useUnmount } from "react-use";
 import MainClientApp from '../client/MainClientApp';
+import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT } from '../common/constants';
 // import RemoteVideo from '../components/RemoteVideo';
 import Button from "../components/Button";
 // import getConfig from "next/config";
@@ -76,56 +77,61 @@ export default function Home({iceServers}) {
         <video className={cameraClassNames.join(" ")} ref={localVideoRef} autoPlay playsInline muted />
         {!joined && <button className={styles.waiting__join} onClick={onClickJoin}>join</button>}
       </div>
-      <div className={styles.controller}>
-        <Button
-          className={styles.controller__moveforward}
-          onButtonDown={onButtonDown}
-          onButtonUp={onButtonUp}
-          buttonName="ButtonMoveForward"
-        >↑</Button>
-        <Button
-          className={styles.controller__moveleft}
-          onButtonDown={onButtonDown}
-          onButtonUp={onButtonUp}
-          buttonName="ButtonMoveLeft"
-        >←</Button>
-        <Button
-          className={styles.controller__movebackward}
-          onButtonDown={onButtonDown}
-          onButtonUp={onButtonUp}
-          buttonName="ButtonMoveBackward"
-        >↓</Button>
-        <Button
-          className={styles.controller__moveright}
-          onButtonDown={onButtonDown}
-          onButtonUp={onButtonUp}
-          buttonName="ButtonMoveRight"
-        >→</Button>
-        <Button
-          className={styles.controller__cameraup}
-          onButtonDown={onButtonDown}
-          onButtonUp={onButtonUp}
-          buttonName="ButtonCameraUp"
-        >↑</Button>
-        <Button
-          className={styles.controller__cameraleft}
-          onButtonDown={onButtonDown}
-          onButtonUp={onButtonUp}
-          buttonName="ButtonCameraLeft"
-        >←</Button>
-        <Button
-          className={styles.controller__cameradown}
-          onButtonDown={onButtonDown}
-          onButtonUp={onButtonUp}
-          buttonName="ButtonCameraDown"
-        >↓</Button>
-        <Button
-          className={styles.controller__cameraright}
-          onButtonDown={onButtonDown}
-          onButtonUp={onButtonUp}
-          buttonName="ButtonCameraRight"
-        >→</Button>
-      </div>
+      {
+        joined && (
+          <div className={styles.controller}>
+            <Button
+              className={styles.controller__moveforward}
+              onButtonDown={onButtonDown}
+              onButtonUp={onButtonUp}
+              buttonName={BUTTON_NAME_MOVE_FORWARD}
+            >↑</Button>
+            <Button
+              className={styles.controller__moveleft}
+              onButtonDown={onButtonDown}
+              onButtonUp={onButtonUp}
+              buttonName={BUTTON_NAME_MOVE_LEFT}
+            >←</Button>
+            <Button
+              className={styles.controller__movebackward}
+              onButtonDown={onButtonDown}
+              onButtonUp={onButtonUp}
+              buttonName={BUTTON_NAME_MOVE_BACKWARD}
+            >↓</Button>
+            <Button
+              className={styles.controller__moveright}
+              onButtonDown={onButtonDown}
+              onButtonUp={onButtonUp}
+              buttonName={BUTTON_NAME_MOVE_RIGHT}
+            >→</Button>
+            <Button
+              className={styles.controller__cameraup}
+              onButtonDown={onButtonDown}
+              onButtonUp={onButtonUp}
+              buttonName={BUTTON_NAME_CAMERA_UP}
+            >↑</Button>
+            <Button
+              className={styles.controller__cameraleft}
+              onButtonDown={onButtonDown}
+              onButtonUp={onButtonUp}
+              buttonName={BUTTON_NAME_CAMERA_LEFT}
+            >←</Button>
+            <Button
+              className={styles.controller__cameradown}
+              onButtonDown={onButtonDown}
+              onButtonUp={onButtonUp}
+              buttonName={BUTTON_NAME_CAMERA_DOWN}
+            >↓</Button>
+            <Button
+              className={styles.controller__cameraright}
+              onButtonDown={onButtonDown}
+              onButtonUp={onButtonUp}
+              buttonName={BUTTON_NAME_CAMERA_RIGHT}
+            >→</Button>
+          </div>
+  
+        )
+      }
 
     </div>
   )

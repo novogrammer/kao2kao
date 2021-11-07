@@ -6,6 +6,7 @@ export default class BasePlayer extends THREE.Group{
     this.setupScene();
   }
   setupScene(){
+    this.rotation.order="YXZ";
     const material=new THREE.MeshStandardMaterial({
       color: 0xffffff,
       roughness:0.2,

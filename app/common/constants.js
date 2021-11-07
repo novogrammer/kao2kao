@@ -5,6 +5,27 @@ export const FPS_SERVER = 10;
 export const FPS_VIDEO = 10;
 export const VIDEO_SIZE = 128;
 
+export const KEY_CODE_KEY_W="KeyW";
+export const KEY_CODE_KEY_A="KeyA";
+export const KEY_CODE_KEY_S="KeyS";
+export const KEY_CODE_KEY_D="KeyD";
+
+export const KEY_CODE_ARROW_UP="ArrowUp";
+export const KEY_CODE_ARROW_LEFT="ArrowLeft";
+export const KEY_CODE_ARROW_DOWN="ArrowDown";
+export const KEY_CODE_ARROW_RIGHT="ArrowRight";
+
+export const BUTTON_NAME_MOVE_FORWARD="ButtonMoveForward";
+export const BUTTON_NAME_MOVE_LEFT="ButtonMoveLeft";
+export const BUTTON_NAME_MOVE_BACKWARD="ButtonMoveBackward";
+export const BUTTON_NAME_MOVE_RIGHT="ButtonMoveRight";
+
+export const BUTTON_NAME_CAMERA_UP="ButtonCameraUp";
+export const BUTTON_NAME_CAMERA_LEFT="ButtonCameraLeft";
+export const BUTTON_NAME_CAMERA_DOWN="ButtonCameraDown";
+export const BUTTON_NAME_CAMERA_RIGHT="ButtonCameraRight";
+
+
 // {
 //   peerId:string,
 // }
