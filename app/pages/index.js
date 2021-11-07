@@ -2,7 +2,8 @@ import Head from 'next/head'
 import { useRef ,useState} from 'react';
 import { useMount,useUnmount } from "react-use";
 import MainClientApp from '../client/MainClientApp';
-import RemoteVideo from '../components/RemoteVideo';
+// import RemoteVideo from '../components/RemoteVideo';
+import Button from "../components/Button";
 // import getConfig from "next/config";
 // const { publicRuntimeConfig } = getConfig();
 
@@ -76,10 +77,30 @@ export default function Home({iceServers}) {
         {!joined && <button className={styles.waiting__join} onClick={onClickJoin}>join</button>}
       </div>
       <div className={styles.controller}>
-      <div className={styles.controller__up} onMouseDown={onButtonDown.bind(null,"ButtonUp")} onMouseUp={onButtonUp.bind(null,"ButtonUp")} onTouchStart={onTouchStart.bind(null,"ButtonUp")} onTouchEnd={onTouchEnd.bind(null,"ButtonUp")} onTouchCancel={onTouchCancel.bind(null,"ButtonUp")}>up</div>
-      <div className={styles.controller__left} onMouseDown={onButtonDown.bind(null,"ButtonLeft")} onMouseUp={onButtonUp.bind(null,"ButtonLeft")} onTouchStart={onTouchStart.bind(null,"ButtonLeft")} onTouchEnd={onTouchEnd.bind(null,"ButtonLeft")} onTouchCancel={onTouchCancel.bind(null,"ButtonLeft")}>left</div>
-      <div className={styles.controller__down} onMouseDown={onButtonDown.bind(null,"ButtonDown")} onMouseUp={onButtonUp.bind(null,"ButtonDown")} onTouchStart={onTouchStart.bind(null,"ButtonDown")} onTouchEnd={onTouchEnd.bind(null,"ButtonDown")} onTouchCancel={onTouchCancel.bind(null,"ButtonDown")}>down</div>
-      <div className={styles.controller__right} onMouseDown={onButtonDown.bind(null,"ButtonRight")} onMouseUp={onButtonUp.bind(null,"ButtonRight")} onTouchStart={onTouchStart.bind(null,"ButtonRight")} onTouchEnd={onTouchEnd.bind(null,"ButtonRight")} onTouchCancel={onTouchCancel.bind(null,"ButtonRight")}>right</div>
+      <Button
+          className={styles.controller__up}
+          onButtonDown={onButtonDown}
+          onButtonUp={onButtonUp}
+          buttonName="ButtonUp"
+        >up</Button>
+        <Button
+          className={styles.controller__left}
+          onButtonDown={onButtonDown}
+          onButtonUp={onButtonUp}
+          buttonName="ButtonLeft"
+        >left</Button>
+        <Button
+          className={styles.controller__down}
+          onButtonDown={onButtonDown}
+          onButtonUp={onButtonUp}
+          buttonName="ButtonDown"
+        >down</Button>
+        <Button
+          className={styles.controller__right}
+          onButtonDown={onButtonDown}
+          onButtonUp={onButtonUp}
+          buttonName="ButtonRight"
+        >right</Button>
       </div>
 
     </div>
