@@ -5,6 +5,9 @@ export const FPS_SERVER = 10;
 export const FPS_VIDEO = 10;
 export const VIDEO_SIZE = 128;
 
+export const CAPSULE_HEIGHT=2;
+
+
 export const KEY_CODE_KEY_W="KeyW";
 export const KEY_CODE_KEY_A="KeyA";
 export const KEY_CODE_KEY_S="KeyS";
@@ -80,4 +83,6 @@ export const ROOM_MAIN="main";
 
 
 
-
+//ammo.js
+// see btCollisionObject.h
+export const DISABLE_DEACTIVATION=4

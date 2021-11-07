@@ -1,4 +1,4 @@
-import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, KEY_CODE_ARROW_DOWN, KEY_CODE_ARROW_LEFT, KEY_CODE_ARROW_RIGHT, KEY_CODE_ARROW_UP, KEY_CODE_KEY_A, KEY_CODE_KEY_D, KEY_CODE_KEY_S, KEY_CODE_KEY_W, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
+import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, CAPSULE_HEIGHT, DISABLE_DEACTIVATION, EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, KEY_CODE_ARROW_DOWN, KEY_CODE_ARROW_LEFT, KEY_CODE_ARROW_RIGHT, KEY_CODE_ARROW_UP, KEY_CODE_KEY_A, KEY_CODE_KEY_D, KEY_CODE_KEY_S, KEY_CODE_KEY_W, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
 import BaseClientApp from "./BaseClientApp";
 import Stats from "stats.js";
 import * as animate from 'animate';
@@ -152,18 +152,21 @@ export default class MainClientApp extends BaseClientApp{
     scene.background = textureCube;
     scene.environment=textureCube;
 
-
-    
-    const ground = new THREE.Mesh(
-      // new THREE.BoxGeometry(100,100,100),
-      new THREE.SphereGeometry( 15, 32, 16 ),
-      new THREE.MeshStandardMaterial( { color: 0xffffff } )
-    );
-    scene.add( ground );
-    ground.position.x=1;
-    ground.position.z=1;
-    ground.position.y=-15;
-    ground.receiveShadow=true;
+    const groundGroup=new THREE.Group();
+    scene.add( groundGroup );
+    {
+      const ground = new THREE.Mesh(
+        // new THREE.BoxGeometry(100,100,100),
+        new THREE.SphereGeometry( 15, 32, 16 ),
+        new THREE.MeshStandardMaterial( { color: 0xffffff } )
+      );
+      ground.position.x=1;
+      ground.position.z=1;
+      ground.position.y=-15;
+      ground.receiveShadow=true;
+      groundGroup.add(ground);
+  
+    }
 
     this.three={
       clock,
@@ -172,6 +175,7 @@ export default class MainClientApp extends BaseClientApp{
       listener,
       renderer,
       gpuPanel,
+      groundGroup,
       myPlayer:null,
       theirPlayerList:[],
       packetThreeConverter,
@@ -192,16 +196,113 @@ export default class MainClientApp extends BaseClientApp{
     });
   }
   async setupAmmoAsync(){
+    const {groundGroup}=this.three;
     const {AmmoLib}=this.dynamicImports;
     const ammoObjectSweeper=new AmmoObjectSweeper(AmmoLib);
     const ammoAndThreeConverter=new AmmoAndThreeConverter({
       THREE,
       AmmoLib,
     });
+    const markT=ammoObjectSweeper.markTemporary.bind(ammoObjectSweeper);
+    const markP=ammoObjectSweeper.markPermanent.bind(ammoObjectSweeper);
+  
+    //準備
+    const collisionConfiguration = markP(new AmmoLib.btDefaultCollisionConfiguration());
+    const dispatcher = markP(new AmmoLib.btCollisionDispatcher(collisionConfiguration));
+    const overlappingPairCache = markP(new AmmoLib.btDbvtBroadphase());
+    const solver = markP(new AmmoLib.btSequentialImpulseConstraintSolver());
+    const dynamicsWorld = markP(new AmmoLib.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration));
+    dynamicsWorld.setGravity(markT(new AmmoLib.btVector3(0, -10, 0)));
+
+    const bodies = [];
+    // 地形
+    groundGroup.traverse((object3D)=>{
+      if(object3D.isMesh){
+        const mesh=object3D;
+        const triangleMesh=markP(new AmmoLib.btTriangleMesh());
+        if(mesh.geometry.index){
+          const {index}=mesh.geometry;
+          const position=mesh.geometry.getAttribute("position");
+          for(let i=0;i<index.count;i+=3){
+            const a=index.getX(i+0);
+            const b=index.getX(i+1);
+            const c=index.getX(i+2);
+    
+            triangleMesh.addTriangle(
+              markT(new AmmoLib.btVector3(
+                position.getX(a),
+                position.getY(a),
+                position.getZ(a),
+              )),
+              markT(new AmmoLib.btVector3(
+                position.getX(b),
+                position.getY(b),
+                position.getZ(b),
+              )),
+              markT(new AmmoLib.btVector3(
+                position.getX(c),
+                position.getY(c),
+                position.getZ(c),
+              ))
+            );
+          }
+        
+        }else{
+          const position=mesh.geometry.getAttribute("position");
+          for(let i=0;i<position.count;i+=3){
+            const a=i+0;
+            const b=i+1;
+            const c=i+2;
+            triangleMesh.addTriangle(
+              markT(new AmmoLib.btVector3(
+                position.getX(a),
+                position.getY(a),
+                position.getZ(a),
+              )),
+              markT(new AmmoLib.btVector3(
+                position.getX(b),
+                position.getY(b),
+                position.getZ(b),
+              )),
+              markT(new AmmoLib.btVector3(
+                position.getX(c),
+                position.getY(c),
+                position.getZ(c),
+              ))
+            );
+          }
+    
+        }
+
+        const groundShape=markP(new Ammo.btBvhTriangleMeshShape(triangleMesh,true,true));
+        const groundTransform = markT(new Ammo.btTransform());
+        groundTransform.setIdentity();
+        groundTransform.setOrigin(markT(new Ammo.btVector3(
+          mesh.position.x,
+          mesh.position.y,
+          mesh.position.z
+        )));
+    
+        const mass = 0;
+        const localInertia = markT(new AmmoLib.btVector3(0, 0, 0));
+        const myMotionState = markP(new AmmoLib.btDefaultMotionState(groundTransform));
+        const rbInfo = markT(new AmmoLib.btRigidBodyConstructionInfo(mass, myMotionState, groundShape, localInertia));
+        const body = markP(new AmmoLib.btRigidBody(rbInfo));
+        dynamicsWorld.addRigidBody(body);
+        bodies.push(body);
+  
+      }
+    });
+
+
 
     this.ammo={
       ammoObjectSweeper,
+      markT,
+      markP,
       ammoAndThreeConverter,
+      dynamicsWorld,
+      bodies,
     };
   }
   async destroyAmmoAsync(){
@@ -250,11 +351,39 @@ export default class MainClientApp extends BaseClientApp{
   }
 
   onClickJoin(){
+    const {AmmoLib}=this.dynamicImports;
     const {localVideo}=this;
     const {scene}=this.three;
+    const {
+      markT,
+      markP,
+      dynamicsWorld,
+      bodies,
+    }=this.ammo;
     const myPlayer=new MyPlayer();
     scene.add(myPlayer);
     myPlayer.setVideo(localVideo);
+
+    
+    const capsuleShape = markP(new Ammo.btCapsuleShape(1/2,CAPSULE_HEIGHT/2));
+    const startTransform = markT(new Ammo.btTransform());
+    startTransform.setIdentity();
+    startTransform.setOrigin(markT(new Ammo.btVector3(0,5,0)));
+    const mass = 1;
+    const localInertia = markT(new Ammo.btVector3(0, 0, 0));
+    capsuleShape.calculateLocalInertia(mass, localInertia);
+
+    const myMotionState = markP(new Ammo.btDefaultMotionState(startTransform));
+    const rbInfo = markT(new Ammo.btRigidBodyConstructionInfo(mass, myMotionState, capsuleShape, localInertia));
+    const capsuleBody = markP(new Ammo.btRigidBody(rbInfo));
+    capsuleBody.setAngularFactor(markT(new Ammo.btVector3(0,0,0)));
+    capsuleBody.setActivationState(DISABLE_DEACTIVATION);
+    dynamicsWorld.addRigidBody(capsuleBody);
+    bodies.push(capsuleBody);
+
+    Object.assign(myPlayer.userData,{
+      capsuleBody,
+    });
 
     Object.assign(this.three,{
       myPlayer,
@@ -271,9 +400,14 @@ export default class MainClientApp extends BaseClientApp{
   update(){
     const {myPlayer,packetThreeConverter,camera}=this.three;
     const {socket,buttonStateMap}=this;
-    const {ammoObjectSweeper}=this.ammo;
+    const {
+      ammoObjectSweeper,
+      markT,
+      markP,
+      ammoAndThreeConverter,
+      dynamicsWorld,
+    }=this.ammo;
 
-    ammoObjectSweeper.destroyTemporaryObjects();
 
     for(let [name,buttonState] of buttonStateMap){
       buttonState.update();
@@ -284,28 +418,29 @@ export default class MainClientApp extends BaseClientApp{
         console.log("isOnUp",name);
       }
     }
-    
 
+    //物理シミュレーション前
     if(myPlayer){
-      const {cameraBase,cameraTarget}=myPlayer.userData;
+      const {cameraBase,capsuleBody}=myPlayer.userData;
       const isSomeDown=(nameList)=>{
         return nameList.map((name)=>buttonStateMap.get(name).currentPressState).some((currentPressState)=>currentPressState);
       }
+      const fTotal=new THREE.Vector3();
       if(isSomeDown([KEY_CODE_KEY_W,BUTTON_NAME_MOVE_FORWARD])){
-        const v=new THREE.Vector3(0,0,-1).applyQuaternion(myPlayer.quaternion).multiplyScalar(0.1);
-        myPlayer.position.add(v);
+        const f=new THREE.Vector3(0,0,-1).applyQuaternion(myPlayer.quaternion).multiplyScalar(10);
+        fTotal.add(f);
       }
       if(isSomeDown([KEY_CODE_KEY_A,BUTTON_NAME_MOVE_LEFT])){
-        const v=new THREE.Vector3(-1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(0.1);
-        myPlayer.position.add(v);
+        const f=new THREE.Vector3(-1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(10);
+        fTotal.add(f);
       }
       if(isSomeDown([KEY_CODE_KEY_S,BUTTON_NAME_MOVE_BACKWARD])){
-        const v=new THREE.Vector3(0,0,1).applyQuaternion(myPlayer.quaternion).multiplyScalar(0.1);
-        myPlayer.position.add(v);
+        const f=new THREE.Vector3(0,0,1).applyQuaternion(myPlayer.quaternion).multiplyScalar(10);
+        fTotal.add(f);
       }
       if(isSomeDown([KEY_CODE_KEY_D,BUTTON_NAME_MOVE_RIGHT])){
-        const v=new THREE.Vector3(1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(0.1);
-        myPlayer.position.add(v);
+        const f=new THREE.Vector3(1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(10);
+        fTotal.add(f);
       }
       if(isSomeDown([KEY_CODE_ARROW_UP,BUTTON_NAME_CAMERA_UP])){
         cameraBase.rotation.x+=0.1;
@@ -319,7 +454,38 @@ export default class MainClientApp extends BaseClientApp{
       if(isSomeDown([KEY_CODE_ARROW_RIGHT,BUTTON_NAME_CAMERA_RIGHT])){
         myPlayer.rotation.y-=0.1;
       }
+      capsuleBody.applyCentralForce(markT(new Ammo.btVector3(fTotal.x,fTotal.y,fTotal.z)));
 
+      ;
+
+
+    }
+    
+    const delta=1/FPS_CLIENT;
+    dynamicsWorld.stepSimulation(delta, 2);
+
+    ammoObjectSweeper.destroyTemporaryObjects();
+    
+
+    //物理シミュレーション後
+    if(myPlayer){
+      const {cameraTarget,capsuleBody}=myPlayer.userData;
+
+      const origin=capsuleBody.getWorldTransform().getOrigin();
+      myPlayer.position.set(
+        origin.x(),
+        origin.y()-CAPSULE_HEIGHT/2,
+        origin.z()
+      );
+
+      //回転は物理演算を使わない
+      // const rotation=capsuleBody.getWorldTransform().getRotation();
+      // myPlayer.quaternion.set(
+      //   rotation.x(),
+      //   rotation.y(),
+      //   rotation.z(),
+      //   rotation.w()
+      // );
 
       cameraTarget.updateWorldMatrix(true,false);
       // なめらかなカメラ追従の仕組みは余裕があれば組み込む
