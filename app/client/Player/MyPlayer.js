@@ -3,8 +3,8 @@ import * as THREE from "three";
 
 
 export default class MyPlayer extends BasePlayer{
-  constructor(){
-    super();
+  constructor(hanpenGltf){
+    super(hanpenGltf);
     const cameraBase=new THREE.Object3D();
     cameraBase.position.y=2;
     this.add(cameraBase);

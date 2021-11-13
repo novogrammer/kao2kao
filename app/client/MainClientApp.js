@@ -24,9 +24,14 @@ export default class MainClientApp extends BaseClientApp{
    */
    async setupAsync(){
     const { GPUStatsPanel }=await import('three/examples/jsm/utils/GPUStatsPanel.js');
+    const { GLTFLoader }=await import('three/examples/jsm/loaders/GLTFLoader.js');
+    const SkeletonUtils=await import('three/examples/jsm/utils/SkeletonUtils.js');
+    
     const AmmoLib=await getAmmoLibAsync();
     this.dynamicImports={
       GPUStatsPanel,
+      GLTFLoader,
+      SkeletonUtils,
       AmmoLib,
     };
 
@@ -102,7 +107,7 @@ export default class MainClientApp extends BaseClientApp{
     stats.dom.remove();
   }
   async setupThreeAsync(){
-    const {GPUStatsPanel}=this.dynamicImports;
+    const {GPUStatsPanel,GLTFLoader}=this.dynamicImports;
     const packetThreeConverter=new PacketThreeConverter({THREE});
 
     const {stats,view}=this;
@@ -144,13 +149,21 @@ export default class MainClientApp extends BaseClientApp{
     light.castShadow = true;
     scene.add( light );
 
-    const loader = new THREE.CubeTextureLoader();
-    loader.setPath( 'assets/textures/cube/Bridge2/' );
+    const cubeTextureLoader = new THREE.CubeTextureLoader();
+    cubeTextureLoader.setPath( 'assets/textures/cube/Bridge2/' );
 
-    const textureCube = loader.load( [ 'posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg' ] );
+    const textureCube = cubeTextureLoader.load( [ 'posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg' ] );
     textureCube.encoding = THREE.sRGBEncoding;
     scene.background = textureCube;
     scene.environment=textureCube;
+
+    const gltfLoader=new GLTFLoader();
+    gltfLoader.setPath('assets/models/');
+    const originalHanpenGltf=await new Promise((resolve,reject)=>{
+      gltfLoader.load('hanpen_animation.glb',resolve,null,reject);
+    });
+    // console.log(originalHanpenGltf);
+
 
     const groundGroup=new THREE.Group();
     scene.add( groundGroup );
@@ -177,6 +190,7 @@ export default class MainClientApp extends BaseClientApp{
       gpuPanel,
       groundGroup,
       myPlayer:null,
+      originalHanpenGltf,
       theirPlayerList:[],
       packetThreeConverter,
     };
@@ -351,16 +365,20 @@ export default class MainClientApp extends BaseClientApp{
   }
 
   onClickJoin(){
-    const {AmmoLib}=this.dynamicImports;
+    const {AmmoLib,SkeletonUtils}=this.dynamicImports;
     const {localVideo}=this;
-    const {scene}=this.three;
+    const {scene,originalHanpenGltf}=this.three;
     const {
       markT,
       markP,
       dynamicsWorld,
       bodies,
     }=this.ammo;
-    const myPlayer=new MyPlayer();
+    const hanpenGltf={
+      animations:originalHanpenGltf.animations,
+      scene:SkeletonUtils.clone(originalHanpenGltf.scene),
+    };
+    const myPlayer=new MyPlayer(hanpenGltf);
     scene.add(myPlayer);
     myPlayer.setVideo(localVideo);
 
@@ -457,6 +475,8 @@ export default class MainClientApp extends BaseClientApp{
       capsuleBody.applyCentralForce(markT(new Ammo.btVector3(fTotal.x,fTotal.y,fTotal.z)));
 
       ;
+
+      myPlayer.update(1/FPS_CLIENT);
 
 
     }
@@ -616,7 +636,14 @@ export default class MainClientApp extends BaseClientApp{
   async onAddPeerAsync({peerId}){
     console.log("MainClientApp#onAddPeerAsync",peerId);
     const {theirPlayerList,scene}=this.three;
-    const theirPlayer=new TheirPlayer(peerId);
+    const {SkeletonUtils}=this.dynamicImports;
+
+    const hanpenGltf={
+      animations:originalHanpenGltf.animations,
+      scene:SkeletonUtils.clone(originalHanpenGltf.scene),
+    };
+
+    const theirPlayer=new TheirPlayer(hanpenGltf,peerId);
     theirPlayerList.push(theirPlayer);
     scene.add(theirPlayer);
   }

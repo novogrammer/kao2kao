@@ -2,8 +2,8 @@ import BasePlayer from "./BasePlayer";
 
 
 export default class TheirPlayer extends BasePlayer{
-  constructor(peerId){
-    super();
+  constructor(hanpenGltf,peerId){
+    super(hanpenGltf);
     this.peerId=peerId;
   }
 }

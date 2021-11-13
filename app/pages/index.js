@@ -34,8 +34,9 @@ export default function Home({iceServers}) {
     const clientApp=clientAppRef.current;
     await clientApp.destroyAsync();
   });
-  const onClickJoin=()=>{
+  const onClickJoin=async ()=>{
     const clientApp=clientAppRef.current;
+    await clientApp.setupPromise;
     clientApp.onClickJoin();
   }
   const cameraClassNames=[
