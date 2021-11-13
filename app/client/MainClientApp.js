@@ -1,4 +1,4 @@
-import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, CAPSULE_HEIGHT, DISABLE_DEACTIVATION, EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, KEY_CODE_ARROW_DOWN, KEY_CODE_ARROW_LEFT, KEY_CODE_ARROW_RIGHT, KEY_CODE_ARROW_UP, KEY_CODE_KEY_A, KEY_CODE_KEY_D, KEY_CODE_KEY_S, KEY_CODE_KEY_W, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
+import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, CAPSULE_HEIGHT, DISABLE_DEACTIVATION, EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, IS_DEBUG_CAMERA, KEY_CODE_ARROW_DOWN, KEY_CODE_ARROW_LEFT, KEY_CODE_ARROW_RIGHT, KEY_CODE_ARROW_UP, KEY_CODE_KEY_A, KEY_CODE_KEY_D, KEY_CODE_KEY_S, KEY_CODE_KEY_W, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
 import BaseClientApp from "./BaseClientApp";
 import Stats from "stats.js";
 import * as animate from 'animate';
@@ -509,11 +509,13 @@ export default class MainClientApp extends BaseClientApp{
 
       cameraTarget.updateWorldMatrix(true,false);
       // なめらかなカメラ追従の仕組みは余裕があれば組み込む
-      cameraTarget.matrixWorld.decompose(
-        camera.position,
-        camera.quaternion,
-        camera.scale
-      );
+      if(!IS_DEBUG_CAMERA){
+        cameraTarget.matrixWorld.decompose(
+          camera.position,
+          camera.quaternion,
+          camera.scale
+        );
+      }
       // myPlayer.position.x+=0.01;
       // const euler=new THREE.Euler();
       // euler.x=Math.random()*Math.PI*2;
@@ -635,7 +637,7 @@ export default class MainClientApp extends BaseClientApp{
 
   async onAddPeerAsync({peerId}){
     console.log("MainClientApp#onAddPeerAsync",peerId);
-    const {theirPlayerList,scene}=this.three;
+    const {theirPlayerList,scene,originalHanpenGltf}=this.three;
     const {SkeletonUtils}=this.dynamicImports;
 
     const hanpenGltf={

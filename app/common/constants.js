@@ -1,4 +1,5 @@
 export const IS_DEBUG=true;
+export const IS_DEBUG_CAMERA=false;
 export const FPS_CLIENT = 60;
 export const FPS_MESSAGE = 10;
 export const FPS_SERVER = 10;
