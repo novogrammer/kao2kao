@@ -156,7 +156,7 @@ export default class MainClientApp extends BaseClientApp{
     light.shadow.camera.bottom=cameraRectSize*-0.5;
     light.shadow.camera.right=cameraRectSize*0.5;
     light.shadow.camera.top=cameraRectSize*0.5;
-    light.shadow.normalBias=-0.01;
+    light.shadow.normalBias=0.05;
 
     scene.add( light );
 
