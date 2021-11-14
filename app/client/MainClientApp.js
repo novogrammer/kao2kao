@@ -189,7 +189,26 @@ export default class MainClientApp extends BaseClientApp{
            side:THREE.DoubleSide,
           } )
       );
+      ground.geometry.scale(-1,1,1);//flip normal
+      ground.geometry.computeVertexNormals();
       ground.position.y=size/2;
+      ground.castShadow=true;
+      ground.receiveShadow=true;
+      groundGroup.add(ground);
+    }
+    {
+      const size=5;
+      const ground = new THREE.Mesh(
+        // new THREE.BoxGeometry(100,100,100),
+        new THREE.BoxGeometry(size,size,size),
+        // new THREE.SphereGeometry( 15, 32, 16 ),
+        new THREE.MeshStandardMaterial( {
+           color: 0xffffff ,
+          } )
+      );
+      ground.position.y=-1;
+      ground.position.z=-5;
+      ground.rotation.z=THREE.MathUtils.degToRad(30);
       ground.castShadow=true;
       ground.receiveShadow=true;
       groundGroup.add(ground);
@@ -309,6 +328,12 @@ export default class MainClientApp extends BaseClientApp{
           mesh.position.x,
           mesh.position.y,
           mesh.position.z
+        )));
+        groundTransform.setRotation(markT(new Ammo.btQuaternion(
+          mesh.quaternion.x,
+          mesh.quaternion.y,
+          mesh.quaternion.z,
+          mesh.quaternion.w,
         )));
     
         const mass = 0;
