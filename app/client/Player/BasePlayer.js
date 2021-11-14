@@ -94,6 +94,7 @@ export default class BasePlayer extends THREE.Group{
     const {material}=this.userData;
     if(video){
       const videoTexture=new THREE.VideoTexture(video);
+      videoTexture.encoding=THREE.sRGBEncoding;
       material.map=videoTexture;
       material.needsUpdate=true;
     }else{
