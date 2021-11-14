@@ -29,52 +29,64 @@ export const BUTTON_NAME_CAMERA_LEFT="ButtonCameraLeft";
 export const BUTTON_NAME_CAMERA_DOWN="ButtonCameraDown";
 export const BUTTON_NAME_CAMERA_RIGHT="ButtonCameraRight";
 
+// type PacketVector3 = [number,number,number];
+// type PacketQuaternion = [number,number,number,number];
 
-// {
-//   peerId:string,
+
+// interface PacketNeedToConnect{
+//   peerId:string;
 // }
 export const EVENT_NEED_TO_CONNECT ="need to connect";
-// {
-//   peerId:string,
+// interface PacketNeedToDisconnect{
+//   peerId:string;
 // }
 export const EVENT_NEED_TO_DISCONNECT ="need to disconnect";
 
-// {
-//   peerId:string,
+// interface PacketAddPeer{
+//   peerId:string;
 // }
 export const EVENT_ADD_PEER="add peer";
-// {
-//   peerId:string,
+// interface PacketRemovePeer{
+//   peerId:string;
 // }
 export const EVENT_REMOVE_PEER="remove peer";
 
-// {
+// interface PacketMyMove{
 //   transform:{
-//     position:Number[3],
-//     quaternion:Number[4],
-//   },
+//     position:PacketVector3;
+//     quaternion:PacketQuaternion;
+//   };
 // }
 export const EVENT_MY_MOVE="my move";
-// {
-//   peerId:string,
+// interface PacketTheirMove{
+//   peerId:string;
 //   transform:{
-//     position:Number[3],
-//     quaternion:Number[4],
-//   },
+//     position:PacketVector3;
+//     quaternion:PacketQuaternion;
+//   };
 // }
 export const EVENT_THEIR_MOVE="their move";
 
-// {
-//   type:string,
+// interface PacketSignaling{
+//   type:string;
 //   // upstreamにはfromは含まれない
-//   from:string,
-//   to:string,
+//   from?:string;
+//   to:string;
+// }
+// interface PacketSignalingOffer extends PacketSignaling{
+//   sdp:RTCSessionDescription;
+// }
+// interface PacketSignalingAnswer extends PacketSignaling{
+//   sdp:RTCSessionDescription;
+// }
+// interface PacketSignalingIceCandiate extends PacketSignaling{
+//   candidate:RTCIceCandidate;
 // }
 export const EVENT_SIGNALING="signaling";
 
 //返信で可否を返す
-// {
-//   room:string,
+// interface PacketJoin{
+//   room:string;
 // }
 export const EVENT_JOIN="join";
 
