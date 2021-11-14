@@ -324,17 +324,8 @@ export default class MainClientApp extends BaseClientApp{
         const groundShape=markP(new AmmoLib.btBvhTriangleMeshShape(triangleMesh,true,true));
         const groundTransform = markT(new AmmoLib.btTransform());
         groundTransform.setIdentity();
-        groundTransform.setOrigin(markT(new AmmoLib.btVector3(
-          mesh.position.x,
-          mesh.position.y,
-          mesh.position.z
-        )));
-        groundTransform.setRotation(markT(new AmmoLib.btQuaternion(
-          mesh.quaternion.x,
-          mesh.quaternion.y,
-          mesh.quaternion.z,
-          mesh.quaternion.w,
-        )));
+        groundTransform.setOrigin(markT(ammoAndThreeConverter.convertVector3ThreeToAmmo(mesh.position)));
+        groundTransform.setRotation(markT(ammoAndThreeConverter.convertQuaternionThreeToAmmo(mesh.quaternion)));
     
         const mass = 0;
         const localInertia = markT(new AmmoLib.btVector3(0, 0, 0));
@@ -512,9 +503,8 @@ export default class MainClientApp extends BaseClientApp{
       if(isSomeDown([KEY_CODE_ARROW_RIGHT,BUTTON_NAME_CAMERA_RIGHT])){
         myPlayer.rotation.y-=0.1;
       }
-      capsuleBody.applyCentralForce(markT(new AmmoLib.btVector3(fTotal.x,fTotal.y,fTotal.z)));
+      capsuleBody.applyCentralForce(markT(ammoAndThreeConverter.convertVector3ThreeToAmmo(fTotal)));
 
-      ;
 
       myPlayer.update(1/FPS_CLIENT);
 
