@@ -145,8 +145,19 @@ export default class MainClientApp extends BaseClientApp{
     const ambientLight=new THREE.HemisphereLight( 0xc0c0c0, 0x404040, 1 );
     scene.add(ambientLight);
     const light = new THREE.DirectionalLight( 0xffffff, 0.5 );
-    light.position.set(10,10,10);
+    light.position.set(0,10,0);
     light.castShadow = true;
+    light.shadow.mapSize.width = 512; // default
+    light.shadow.mapSize.height = 512; // default
+    light.shadow.camera.near = 0.5; // default
+    light.shadow.camera.far = 500; // default
+    const cameraRectSize=20;
+    light.shadow.camera.left=cameraRectSize*-0.5;
+    light.shadow.camera.bottom=cameraRectSize*-0.5;
+    light.shadow.camera.right=cameraRectSize*0.5;
+    light.shadow.camera.top=cameraRectSize*0.5;
+    light.shadow.normalBias=-0.01;
+
     scene.add( light );
 
     const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -168,17 +179,20 @@ export default class MainClientApp extends BaseClientApp{
     const groundGroup=new THREE.Group();
     scene.add( groundGroup );
     {
+      const size=20;
       const ground = new THREE.Mesh(
         // new THREE.BoxGeometry(100,100,100),
-        new THREE.SphereGeometry( 15, 32, 16 ),
-        new THREE.MeshStandardMaterial( { color: 0xffffff } )
+        new THREE.BoxGeometry(size,size,size),
+        // new THREE.SphereGeometry( 15, 32, 16 ),
+        new THREE.MeshStandardMaterial( {
+           color: 0xffffff ,
+           side:THREE.DoubleSide,
+          } )
       );
-      ground.position.x=1;
-      ground.position.z=1;
-      ground.position.y=-15;
+      ground.position.y=size/2;
+      ground.castShadow=true;
       ground.receiveShadow=true;
       groundGroup.add(ground);
-  
     }
 
     this.three={
