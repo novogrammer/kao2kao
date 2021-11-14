@@ -8,6 +8,8 @@ export const VIDEO_SIZE = 128;
 
 export const CAPSULE_HEIGHT=2;
 
+export const ACTION_WEIGHT_VELOCITY=1;
+
 
 export const KEY_CODE_KEY_W="KeyW";
 export const KEY_CODE_KEY_A="KeyA";
@@ -32,7 +34,6 @@ export const BUTTON_NAME_CAMERA_RIGHT="ButtonCameraRight";
 // type PacketVector3 = [number,number,number];
 // type PacketQuaternion = [number,number,number,number];
 
-
 // interface PacketNeedToConnect{
 //   peerId:string;
 // }
@@ -56,6 +57,7 @@ export const EVENT_REMOVE_PEER="remove peer";
 //     position:PacketVector3;
 //     quaternion:PacketQuaternion;
 //   };
+//   runningWeight:number;
 // }
 export const EVENT_MY_MOVE="my move";
 // interface PacketTheirMove{
@@ -64,6 +66,7 @@ export const EVENT_MY_MOVE="my move";
 //     position:PacketVector3;
 //     quaternion:PacketQuaternion;
 //   };
+//   runningWeight:number;
 // }
 export const EVENT_THEIR_MOVE="their move";
 

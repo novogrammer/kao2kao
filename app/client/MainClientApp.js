@@ -446,7 +446,7 @@ export default class MainClientApp extends BaseClientApp{
 
   }
   update(){
-    const {myPlayer,packetThreeConverter,camera}=this.three;
+    const {myPlayer,theirPlayerList,packetThreeConverter,camera}=this.three;
     const {socket,buttonStateMap}=this;
     const {AmmoLib}=this.dynamicImports;
     const {
@@ -503,12 +503,20 @@ export default class MainClientApp extends BaseClientApp{
       if(isSomeDown([KEY_CODE_ARROW_RIGHT,BUTTON_NAME_CAMERA_RIGHT])){
         myPlayer.rotation.y-=0.1;
       }
-      capsuleBody.applyCentralForce(markT(ammoAndThreeConverter.convertVector3ThreeToAmmo(fTotal)));
+      if(0<fTotal.lengthSq()){
+        capsuleBody.applyCentralForce(markT(ammoAndThreeConverter.convertVector3ThreeToAmmo(fTotal)));
+        myPlayer.setRunningWeight(1);
+      }else{
+        myPlayer.setRunningWeight(0);
+      }
 
 
       myPlayer.update(1/FPS_CLIENT);
 
 
+    }
+    for(let theirPlayer of theirPlayerList){
+      theirPlayer.update(1/FPS_CLIENT);
     }
     
     const delta=1/FPS_CLIENT;
@@ -557,6 +565,7 @@ export default class MainClientApp extends BaseClientApp{
           position:packetThreeConverter.convertVector3ThreeToPacket(myPlayer.position),
           quaternion:packetThreeConverter.convertQuaternionThreeToPacket(myPlayer.quaternion),
         },
+        runningWeight:myPlayer.getRunningWeight(),
       };
       // socket.emit(EVENT_MY_MOVE,myData);
       const cpm= FPS_CLIENT / FPS_MESSAGE;
@@ -693,7 +702,7 @@ export default class MainClientApp extends BaseClientApp{
     }
     
   }
-  async onTheirMoveAsync({peerId,transform}){
+  async onTheirMoveAsync({peerId,transform,runningWeight}){
     // console.log("MainClientApp#onTheirMoveAsync",peerId);
     // console.log(peerId,JSON.stringify(transform));
     const {theirPlayerList,packetThreeConverter}=this.three;
@@ -702,6 +711,7 @@ export default class MainClientApp extends BaseClientApp{
     if(theirPlayer){
       packetThreeConverter.convertVector3PacketToThree(transform.position,theirPlayer.position);
       packetThreeConverter.convertQuaternionPacketToThree(transform.quaternion,theirPlayer.quaternion);
+      theirPlayer.setRunningWeight(runningWeight);
 
     }
   }

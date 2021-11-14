@@ -1,11 +1,12 @@
 import * as THREE from "three";
+import { ACTION_WEIGHT_VELOCITY } from "../../common/constants";
 
 export default class BasePlayer extends THREE.Group{
   constructor(hanpenGltf){
     super();
     Object.assign(this.userData,{
       hanpenGltf,
-    });    
+    });
     this.setupScene();
   }
   setupScene(){
@@ -58,7 +59,7 @@ export default class BasePlayer extends THREE.Group{
             const action = mixer.clipAction( clip );
             action.enabled=true;
             action.setEffectiveTimeScale(1);
-            action.setEffectiveWeight(clip.name=="Idle"?0:1);
+            action.setEffectiveWeight(clip.name=="Idle"?1:0);
             action.play();
             actionMap.set(clip.name,action);
           }
@@ -69,15 +70,7 @@ export default class BasePlayer extends THREE.Group{
       }
     }
 
-    // const capsule = new THREE.Mesh(
-    //   new THREE.CylinderGeometry(0.5,0.5,2,32),
-    //   material
-    // );
-    // capsule.position.y=1;
-    // capsule.castShadow=true;
-    // capsule.receiveShadow=true;
-
-    // this.add( capsule );
+    const runningWeight=0;
 
     Object.assign(this.userData,{
       material,
@@ -86,6 +79,8 @@ export default class BasePlayer extends THREE.Group{
       hanpen,
       skeleton,
       mixer,
+      actionMap,
+      runningWeight,
     });
     
 
@@ -103,8 +98,26 @@ export default class BasePlayer extends THREE.Group{
     }
   }
   update(deltaTime){
-    const {mixer}=this.userData;
-
+    const {mixer,actionMap,runningWeight}=this.userData;
+    const idleAction=actionMap.get("Idle");
+    const runningAction=actionMap.get("Running");
+    let currentRunningWeight=runningAction.getEffectiveWeight();
+    const deltaWeight=ACTION_WEIGHT_VELOCITY*deltaTime;
+    if(Math.abs(runningWeight-currentRunningWeight)<=deltaWeight){
+      currentRunningWeight=runningWeight;
+    }else{
+      const direction=Math.sign(runningWeight-currentRunningWeight);
+      currentRunningWeight+=direction*deltaWeight;
+    }
+    // console.log(runningWeight,currentRunningWeight);
+    idleAction.setEffectiveWeight(1-currentRunningWeight);
+    runningAction.setEffectiveWeight(currentRunningWeight);
     mixer.update(deltaTime);
+  }
+  getRunningWeight(){
+    return this.userData.runningWeight;
+  }
+  setRunningWeight(runningWeight){
+    this.userData.runningWeight=runningWeight;
   }
 }
