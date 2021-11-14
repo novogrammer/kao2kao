@@ -14,8 +14,11 @@ export default function Button(props){
   const onTouchCancel=(name,event)=>{
     onButtonUp(name,event);
   }
+  const onContextMenu=(event)=>{
+    event.preventDefault();
+  }
 
   return (
-  <div className={classNameList.join(" ")} onMouseDown={onButtonDown.bind(null,buttonName)} onMouseUp={onButtonUp.bind(null,buttonName)} onTouchStart={onTouchStart.bind(null,buttonName)} onTouchEnd={onTouchEnd.bind(null,buttonName)} onTouchCancel={onTouchCancel.bind(null,buttonName)}>{props.children}</div>
+  <div className={classNameList.join(" ")} onMouseDown={onButtonDown.bind(null,buttonName)} onMouseUp={onButtonUp.bind(null,buttonName)} onTouchStart={onTouchStart.bind(null,buttonName)} onTouchEnd={onTouchEnd.bind(null,buttonName)} onTouchCancel={onTouchCancel.bind(null,buttonName)} onContextMenu={onContextMenu}>{props.children}</div>
   );
 }
