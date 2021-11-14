@@ -321,15 +321,15 @@ export default class MainClientApp extends BaseClientApp{
     
         }
 
-        const groundShape=markP(new Ammo.btBvhTriangleMeshShape(triangleMesh,true,true));
-        const groundTransform = markT(new Ammo.btTransform());
+        const groundShape=markP(new AmmoLib.btBvhTriangleMeshShape(triangleMesh,true,true));
+        const groundTransform = markT(new AmmoLib.btTransform());
         groundTransform.setIdentity();
-        groundTransform.setOrigin(markT(new Ammo.btVector3(
+        groundTransform.setOrigin(markT(new AmmoLib.btVector3(
           mesh.position.x,
           mesh.position.y,
           mesh.position.z
         )));
-        groundTransform.setRotation(markT(new Ammo.btQuaternion(
+        groundTransform.setRotation(markT(new AmmoLib.btQuaternion(
           mesh.quaternion.x,
           mesh.quaternion.y,
           mesh.quaternion.z,
@@ -422,18 +422,18 @@ export default class MainClientApp extends BaseClientApp{
     myPlayer.setVideo(localVideo);
 
     
-    const capsuleShape = markP(new Ammo.btCapsuleShape(1/2,CAPSULE_HEIGHT/2));
-    const startTransform = markT(new Ammo.btTransform());
+    const capsuleShape = markP(new AmmoLib.btCapsuleShape(1/2,CAPSULE_HEIGHT/2));
+    const startTransform = markT(new AmmoLib.btTransform());
     startTransform.setIdentity();
-    startTransform.setOrigin(markT(new Ammo.btVector3(0,5,0)));
+    startTransform.setOrigin(markT(new AmmoLib.btVector3(0,5,0)));
     const mass = 1;
-    const localInertia = markT(new Ammo.btVector3(0, 0, 0));
+    const localInertia = markT(new AmmoLib.btVector3(0, 0, 0));
     capsuleShape.calculateLocalInertia(mass, localInertia);
 
-    const myMotionState = markP(new Ammo.btDefaultMotionState(startTransform));
-    const rbInfo = markT(new Ammo.btRigidBodyConstructionInfo(mass, myMotionState, capsuleShape, localInertia));
-    const capsuleBody = markP(new Ammo.btRigidBody(rbInfo));
-    capsuleBody.setAngularFactor(markT(new Ammo.btVector3(0,0,0)));
+    const myMotionState = markP(new AmmoLib.btDefaultMotionState(startTransform));
+    const rbInfo = markT(new AmmoLib.btRigidBodyConstructionInfo(mass, myMotionState, capsuleShape, localInertia));
+    const capsuleBody = markP(new AmmoLib.btRigidBody(rbInfo));
+    capsuleBody.setAngularFactor(markT(new AmmoLib.btVector3(0,0,0)));
     capsuleBody.setActivationState(DISABLE_DEACTIVATION);
     dynamicsWorld.addRigidBody(capsuleBody);
     bodies.push(capsuleBody);
@@ -457,6 +457,7 @@ export default class MainClientApp extends BaseClientApp{
   update(){
     const {myPlayer,packetThreeConverter,camera}=this.three;
     const {socket,buttonStateMap}=this;
+    const {AmmoLib}=this.dynamicImports;
     const {
       ammoObjectSweeper,
       markT,
@@ -511,7 +512,7 @@ export default class MainClientApp extends BaseClientApp{
       if(isSomeDown([KEY_CODE_ARROW_RIGHT,BUTTON_NAME_CAMERA_RIGHT])){
         myPlayer.rotation.y-=0.1;
       }
-      capsuleBody.applyCentralForce(markT(new Ammo.btVector3(fTotal.x,fTotal.y,fTotal.z)));
+      capsuleBody.applyCentralForce(markT(new AmmoLib.btVector3(fTotal.x,fTotal.y,fTotal.z)));
 
       ;
 
