@@ -394,7 +394,7 @@ export default class MainClientApp extends BaseClientApp{
 
   }
 
-  onClickJoin(){
+  async onClickJoinAsync(){
     const {AmmoLib,SkeletonUtils}=this.dynamicImports;
     const {localVideo}=this;
     const {scene,originalHanpenGltf}=this.three;
@@ -404,6 +404,21 @@ export default class MainClientApp extends BaseClientApp{
       dynamicsWorld,
       bodies,
     }=this.ammo;
+
+    const {socket}=this;
+    const wasSucceeded=await new Promise((resolve)=>{
+      socket.emit(EVENT_JOIN,{
+        room:ROOM_MAIN,
+      },(wasSucceeded)=>{
+        this.setJoined(wasSucceeded);
+        resolve(wasSucceeded);
+      });
+    });
+    if(!wasSucceeded){
+      return;
+    }
+
+
     const hanpenGltf={
       animations:originalHanpenGltf.animations,
       scene:SkeletonUtils.clone(originalHanpenGltf.scene),
@@ -437,12 +452,7 @@ export default class MainClientApp extends BaseClientApp{
       myPlayer,
     });
 
-    const {socket}=this;
-    socket.emit(EVENT_JOIN,{
-      room:ROOM_MAIN,
-    },(wasSucceeded)=>{
-      this.setJoined(wasSucceeded);
-    });
+
 
   }
   update(){

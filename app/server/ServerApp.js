@@ -5,7 +5,7 @@ import socketIo from "socket.io";
 import next from "next";
 import * as THREE from "three";
 
-import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_REMOVE_PEER, EVENT_SIGNALING, EVENT_THEIR_MOVE, FPS_SERVER, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
+import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_REMOVE_PEER, EVENT_SIGNALING, EVENT_THEIR_MOVE, FPS_SERVER, MAIN_ROOM_CAPACITY, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
 
 const port = 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -117,6 +117,10 @@ export default class ServerApp{
     console.log("ServerApp#setupMainRoomAsync");
     const {io} = this;
     const room=ROOM_MAIN;
+    
+    if(MAIN_ROOM_CAPACITY<=Array.from(await io.in(ROOM_MAIN).allSockets()).length){
+      throw new Error("over MAIN_ROOM_CAPACITY");
+    }
     socket.join(room);
 
     socket.on("disconnect", (reason) => {

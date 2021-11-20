@@ -11,6 +11,9 @@ export const CAPSULE_HEIGHT=2;
 export const ACTION_WEIGHT_VELOCITY=1;
 
 
+export const MAIN_ROOM_CAPACITY=10;
+
+
 export const KEY_CODE_KEY_W="KeyW";
 export const KEY_CODE_KEY_A="KeyA";
 export const KEY_CODE_KEY_S="KeyS";

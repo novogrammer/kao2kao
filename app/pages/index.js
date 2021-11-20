@@ -13,7 +13,9 @@ import styles from "../styles/Home.module.scss";
 export default function Home({iceServers}) {
   const clientAppRef=useRef(null);
   const localVideoRef=useRef(null);
+  const joinButtonRef=useRef(null);
   const [joined,setJoined]=useState(false);
+  const [pending,setPending]=useState(false);
 
   const viewRef=useRef(null);
 
@@ -24,7 +26,10 @@ export default function Home({iceServers}) {
       localVideo,
       iceServers,
       view,
-      setJoined,
+      setJoined:(joined)=>{
+        setJoined(joined);
+        setPending(false);
+      },
     });
     window.clientApp=clientApp;
     clientAppRef.current=clientApp;
@@ -34,10 +39,13 @@ export default function Home({iceServers}) {
     const clientApp=clientAppRef.current;
     await clientApp.destroyAsync();
   });
-  const onClickJoin=async ()=>{
+  const onClickJoinAsync=async ()=>{
     const clientApp=clientAppRef.current;
     await clientApp.setupPromise;
-    clientApp.onClickJoin();
+    // stateによるdisabledが追いつかないことがある
+    joinButtonRef.current.disabled=true;
+    setPending(true);
+    await clientApp.onClickJoinAsync();
   }
   const cameraClassNames=[
     styles["waiting__camera"],
@@ -76,7 +84,7 @@ export default function Home({iceServers}) {
       </div>
       <div className={styles.waiting}>
         <video className={cameraClassNames.join(" ")} ref={localVideoRef} autoPlay playsInline muted />
-        {!joined && <button className={styles.waiting__join} onClick={onClickJoin}>join</button>}
+        {!joined && <button ref={joinButtonRef} className={styles.waiting__join} onClick={onClickJoinAsync}disabled={pending}>join</button>}
       </div>
       {
         joined && (
