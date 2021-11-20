@@ -3,7 +3,7 @@ import { EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_SIGNALING,  FPS_
 
 
 export default class BaseClientApp{
-  constructor({localVideo,setRemoteList=()=>{},iceServers,room,view=null,setJoined=()=>{}}){
+  constructor({localVideo,setRemoteList=()=>{},iceServers,room,view=null,setJoined=()=>{},setPopulations=()=>{}}){
     Object.assign(this,{
       localVideo,
       setRemoteList,
@@ -11,6 +11,7 @@ export default class BaseClientApp{
       room,
       view,
       setJoined,
+      setPopulations,
     });
     this.previousRemoteList=[];
     this.remoteList=[];

@@ -5,7 +5,7 @@ import socketIo from "socket.io";
 import next from "next";
 import * as THREE from "three";
 
-import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_REMOVE_PEER, EVENT_SIGNALING, EVENT_THEIR_MOVE, FPS_SERVER, MAIN_ROOM_CAPACITY, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
+import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_POPULATION, EVENT_REMOVE_PEER, EVENT_SIGNALING, EVENT_THEIR_MOVE, FPS_SERVER, MAIN_ROOM_CAPACITY, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
 
 const port = 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -94,6 +94,11 @@ export default class ServerApp{
 
     socket.join(ROOM_WAITING);
 
+    socket.on("disconnect", async(reason) => {
+      await this.emitPopulationAsync(socket);
+    });
+
+
     socket.on(EVENT_JOIN,async (data,callback)=>{
       console.log(EVENT_JOIN,data);
       const {room}=data;
@@ -112,6 +117,7 @@ export default class ServerApp{
           break;
       }
     });
+    await this.emitPopulationAsync(socket);
   }
   async setupMainRoomAsync(socket){
     console.log("ServerApp#setupMainRoomAsync");
@@ -173,7 +179,21 @@ export default class ServerApp{
         });
       }
     }
+    await this.emitPopulationAsync(socket);
 
+  }
+  async emitPopulationAsync(socket){
+    const {io} = this;
+
+    const populations={
+      [ROOM_WAITING]:Array.from(await io.in(ROOM_WAITING).allSockets()).length,
+      [ROOM_MAIN]:Array.from(await io.in(ROOM_MAIN).allSockets()).length,
+    };
+
+    socket.to(ROOM_WAITING).emit(EVENT_POPULATION,populations);
+    socket.emit(EVENT_POPULATION,populations);
+
+    
   }
   async onConnectAsync(socket) {
     console.log("ServerApp#onConnectAsync");

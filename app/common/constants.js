@@ -96,6 +96,12 @@ export const EVENT_SIGNALING="signaling";
 // }
 export const EVENT_JOIN="join";
 
+// interface PacketPopulation{
+//   [ROOM_WAITING]:number;
+//   [ROOM_MAIN]:number;
+// }
+export const EVENT_POPULATION="population"
+
 export const ROOM_SIMPLE="simple";
 export const ROOM_WAITING="waiting";
 export const ROOM_MAIN="main";

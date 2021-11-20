@@ -1,4 +1,4 @@
-import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, CAPSULE_HEIGHT, DISABLE_DEACTIVATION, EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, IS_DEBUG_CAMERA, KEY_CODE_ARROW_DOWN, KEY_CODE_ARROW_LEFT, KEY_CODE_ARROW_RIGHT, KEY_CODE_ARROW_UP, KEY_CODE_KEY_A, KEY_CODE_KEY_D, KEY_CODE_KEY_S, KEY_CODE_KEY_W, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
+import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, CAPSULE_HEIGHT, DISABLE_DEACTIVATION, EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_POPULATION, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, IS_DEBUG_CAMERA, KEY_CODE_ARROW_DOWN, KEY_CODE_ARROW_LEFT, KEY_CODE_ARROW_RIGHT, KEY_CODE_ARROW_UP, KEY_CODE_KEY_A, KEY_CODE_KEY_D, KEY_CODE_KEY_S, KEY_CODE_KEY_W, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
 import BaseClientApp from "./BaseClientApp";
 import Stats from "stats.js";
 import * as animate from 'animate';
@@ -15,8 +15,8 @@ import ButtonState from "./utils/ButtonState";
 
 
 export default class MainClientApp extends BaseClientApp{
-  constructor({localVideo,iceServers,view,setJoined}){
-    super({localVideo,iceServers,room:ROOM_WAITING,view,setJoined});
+  constructor({localVideo,iceServers,view,setJoined,setPopulations}){
+    super({localVideo,iceServers,room:ROOM_WAITING,view,setJoined,setPopulations});
     this.updateCount=0;
   }
   /**
@@ -81,6 +81,7 @@ export default class MainClientApp extends BaseClientApp{
     socket.on(EVENT_ADD_PEER,this.getBind("onAddPeerAsync"));
     socket.on(EVENT_REMOVE_PEER,this.getBind("onRemovePeerAsync"));
     socket.on(EVENT_THEIR_MOVE,this.getBind("onTheirMoveAsync"));
+    socket.on(EVENT_POPULATION,this.getBind("onPopulationAsync"));
     
   }
   /**
@@ -724,6 +725,10 @@ export default class MainClientApp extends BaseClientApp{
       theirPlayer.setRunningWeight(runningWeight);
 
     }
+  }
+  async onPopulationAsync(populations){
+    console.log("MainClientApp#onPopulationAsync",populations);
+    this.setPopulations(populations);
   }
 
   onButtonDown(name){

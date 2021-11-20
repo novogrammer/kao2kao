@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { useRef ,useState} from 'react';
 import { useMount,useUnmount } from "react-use";
 import MainClientApp from '../client/MainClientApp';
-import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT } from '../common/constants';
+import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, MAIN_ROOM_CAPACITY, ROOM_MAIN, ROOM_WAITING } from '../common/constants';
 // import RemoteVideo from '../components/RemoteVideo';
 import Button from "../components/Button";
 // import getConfig from "next/config";
@@ -16,6 +16,10 @@ export default function Home({iceServers}) {
   const joinButtonRef=useRef(null);
   const [joined,setJoined]=useState(false);
   const [pending,setPending]=useState(false);
+  const [populations,setPopulations]=useState({
+    [ROOM_MAIN]:null,
+    [ROOM_WAITING]:null,
+  });
 
   const viewRef=useRef(null);
 
@@ -30,6 +34,7 @@ export default function Home({iceServers}) {
         setJoined(joined);
         setPending(false);
       },
+      setPopulations,
     });
     window.clientApp=clientApp;
     clientAppRef.current=clientApp;
@@ -84,7 +89,13 @@ export default function Home({iceServers}) {
       </div>
       <div className={styles.waiting}>
         <video className={cameraClassNames.join(" ")} ref={localVideoRef} autoPlay playsInline muted />
-        {!joined && <button ref={joinButtonRef} className={styles.waiting__join} onClick={onClickJoinAsync}disabled={pending}>join</button>}
+        {!joined && (
+          <>
+            <button ref={joinButtonRef} className={styles.waiting__join} onClick={onClickJoinAsync}disabled={pending}>join</button>
+            <div className={styles.waiting__population}>Waiting Room:{populations[ROOM_WAITING]}</div>
+            <div className={styles.waiting__population}>Main Room:{populations[ROOM_MAIN]}/{MAIN_ROOM_CAPACITY}</div>
+          </>
+        )}
       </div>
       {
         joined && (
