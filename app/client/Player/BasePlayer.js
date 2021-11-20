@@ -49,10 +49,12 @@ export default class BasePlayer extends THREE.Group{
         });
         object.material=object.material.clone();
         
+        const {material}=object;
         if(playerRotation){
-          const {material}=object;
           const color=this.makeColor();
           material.color.copy(color);
+        }else{
+          material.color.set(0xffffff);
         }
       }
     });
