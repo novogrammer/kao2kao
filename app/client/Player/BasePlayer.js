@@ -29,6 +29,7 @@ export default class BasePlayer extends THREE.Group{
 
     const cameraBase=new THREE.Object3D();
     cameraBase.position.y=2;
+    cameraBase.position.z=-0.3;
     this.add(cameraBase);
     const cameraTarget=new THREE.Object3D();
     cameraTarget.position.y=0.5;
@@ -64,8 +65,7 @@ export default class BasePlayer extends THREE.Group{
     const VIDEO_PLANE_SIZE=0.75;
     const videoPlane=new THREE.Mesh(new THREE.PlaneBufferGeometry(VIDEO_PLANE_SIZE,VIDEO_PLANE_SIZE),material);
     videoPlane.rotation.y=THREE.MathUtils.degToRad(180);
-    videoPlane.position.y=-0.2;
-    videoPlane.position.z=-0.3;
+    videoPlane.position.y=0.1;
     cameraBase.add(videoPlane);
 
     const mixer=new THREE.AnimationMixer(hanpen);

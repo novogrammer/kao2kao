@@ -549,7 +549,7 @@ export default class MainClientApp extends BaseClientApp{
 
     //物理シミュレーション後
     if(myPlayer){
-      const {cameraTarget,capsuleBody}=myPlayer.userData;
+      const {cameraTarget,cameraBase,capsuleBody}=myPlayer.userData;
 
       const origin=capsuleBody.getWorldTransform().getOrigin();
       myPlayer.position.set(
@@ -587,6 +587,7 @@ export default class MainClientApp extends BaseClientApp{
           position:packetThreeConverter.convertVector3ThreeToPacket(myPlayer.position),
           quaternion:packetThreeConverter.convertQuaternionThreeToPacket(myPlayer.quaternion),
         },
+        cameraRotationX:cameraBase.rotation.x,
         runningWeight:myPlayer.getRunningWeight(),
         playerRotation:myPlayer.getPlayerRotation(),
       };
@@ -725,17 +726,19 @@ export default class MainClientApp extends BaseClientApp{
     }
     
   }
-  async onTheirMoveAsync({peerId,transform,runningWeight,playerRotation}){
+  async onTheirMoveAsync({peerId,transform,cameraRotationX,runningWeight,playerRotation}){
     // console.log("MainClientApp#onTheirMoveAsync",peerId);
     // console.log(peerId,JSON.stringify(transform));
     const {theirPlayerList,packetThreeConverter}=this.three;
 
     const theirPlayer=theirPlayerList.find((theirPlayer)=>theirPlayer.peerId==peerId);
     if(theirPlayer){
+      const {cameraBase}=theirPlayer.userData;
       packetThreeConverter.convertVector3PacketToThree(transform.position,theirPlayer.position);
       packetThreeConverter.convertQuaternionPacketToThree(transform.quaternion,theirPlayer.quaternion);
       theirPlayer.setRunningWeight(runningWeight);
       theirPlayer.setPlayerRotation(playerRotation);
+      cameraBase.rotation.x=cameraRotationX;
 
     }
   }

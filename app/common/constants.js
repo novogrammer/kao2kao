@@ -62,6 +62,7 @@ export const EVENT_REMOVE_PEER="remove peer";
 //     position:PacketVector3;
 //     quaternion:PacketQuaternion;
 //   };
+//   cameraRotationX:number;
 //   runningWeight:number;
 //   playerRotation:number;
 // }
@@ -72,6 +73,7 @@ export const EVENT_MY_MOVE="my move";
 //     position:PacketVector3;
 //     quaternion:PacketQuaternion;
 //   };
+//   cameraRotationX:number;
 //   runningWeight:number;
 //   playerRotation:number;
 // }
