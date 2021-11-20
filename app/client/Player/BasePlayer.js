@@ -2,20 +2,30 @@ import * as THREE from "three";
 import { ACTION_WEIGHT_VELOCITY } from "../../common/constants";
 
 export default class BasePlayer extends THREE.Group{
-  constructor(hanpenGltf){
+  constructor(hanpenGltf,playerRotation=null){
     super();
     Object.assign(this.userData,{
       hanpenGltf,
+      playerRotation,
     });
     this.setupScene();
   }
   setupScene(){
-    const {hanpenGltf}=this.userData;
+    const {hanpenGltf,playerRotation}=this.userData;
     this.rotation.order="YXZ";
     const material=new THREE.MeshBasicMaterial({
       color: 0xffffff,
       side:THREE.DoubleSide,
     });
+
+    if(playerRotation!=null){
+      const v=new THREE.Vector3(0,5,3);
+      v.applyAxisAngle(new THREE.Vector3(0,1,0),playerRotation);
+      this.position.copy(v);
+      this.rotation.y=playerRotation;
+
+    }
+
 
     const cameraBase=new THREE.Object3D();
     cameraBase.position.y=2;
@@ -33,6 +43,16 @@ export default class BasePlayer extends THREE.Group{
         object.castShadow = true;
         object.receiveShadow = true;
         object.frustumCulled=false;
+        Object.assign(object.userData,{
+          canChangeColor:true,
+        });
+        object.material=object.material.clone();
+        
+        if(playerRotation){
+          const {material}=object;
+          const color=this.makeColor();
+          material.color.copy(color);
+        }
       }
     });
     hanpen.rotation.y=THREE.MathUtils.degToRad(180);
@@ -119,5 +139,26 @@ export default class BasePlayer extends THREE.Group{
   }
   setRunningWeight(runningWeight){
     this.userData.runningWeight=runningWeight;
+  }
+  makeColor(){
+    const {playerRotation}=this.userData;
+    const color=new THREE.Color().setHSL(playerRotation/(Math.PI*2),1,0.5);
+    return color;
+  }
+  getPlayerRotation(){
+    return this.userData.playerRotation;
+  }
+  setPlayerRotation(playerRotation){
+    Object.assign(this.userData,{
+      playerRotation,
+    });
+    const {hanpen}=this.userData;
+    const color=this.makeColor();
+    hanpen.traverse((object)=>{
+      if ( object.isMesh && object.userData.canChangeColor){
+        const {material}=object;
+        material.color.copy(color);
+      }
+    });
   }
 }

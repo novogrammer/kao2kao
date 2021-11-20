@@ -10,9 +10,10 @@ export const CAPSULE_HEIGHT=2;
 
 export const ACTION_WEIGHT_VELOCITY=1;
 
-
 export const MAIN_ROOM_CAPACITY=10;
 
+const DEG_TO_RAD = Math.PI/180;
+export const PLAYER_ROTATION_OFFSET = 360*3/20 * DEG_TO_RAD;
 
 export const KEY_CODE_KEY_W="KeyW";
 export const KEY_CODE_KEY_A="KeyA";
@@ -61,6 +62,7 @@ export const EVENT_REMOVE_PEER="remove peer";
 //     quaternion:PacketQuaternion;
 //   };
 //   runningWeight:number;
+//   playerRotation:number;
 // }
 export const EVENT_MY_MOVE="my move";
 // interface PacketTheirMove{
@@ -70,6 +72,7 @@ export const EVENT_MY_MOVE="my move";
 //     quaternion:PacketQuaternion;
 //   };
 //   runningWeight:number;
+//   playerRotation:number;
 // }
 export const EVENT_THEIR_MOVE="their move";
 
@@ -93,6 +96,10 @@ export const EVENT_SIGNALING="signaling";
 //返信で可否を返す
 // interface PacketJoin{
 //   room:string;
+// }
+// interface PacketJoinReponse{
+//   wasSucceeded:boolean;
+//   playerRotation?:number;
 // }
 export const EVENT_JOIN="join";
 

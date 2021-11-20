@@ -5,7 +5,7 @@ import socketIo from "socket.io";
 import next from "next";
 import * as THREE from "three";
 
-import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_POPULATION, EVENT_REMOVE_PEER, EVENT_SIGNALING, EVENT_THEIR_MOVE, FPS_SERVER, MAIN_ROOM_CAPACITY, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
+import { EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_NEED_TO_CONNECT, EVENT_NEED_TO_DISCONNECT, EVENT_POPULATION, EVENT_REMOVE_PEER, EVENT_SIGNALING, EVENT_THEIR_MOVE, FPS_SERVER, MAIN_ROOM_CAPACITY, PLAYER_ROTATION_OFFSET, ROOM_MAIN, ROOM_SIMPLE, ROOM_WAITING } from "../common/constants";
 
 const port = 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -15,7 +15,7 @@ const dev = process.env.NODE_ENV !== 'production';
 export default class ServerApp{
   constructor(){
     this.setupPromise = this.setupAsync();
-
+    this.playerIndex=0;
   }
   async setupAsync() {
     const app = express();
@@ -106,14 +106,19 @@ export default class ServerApp{
         case ROOM_MAIN:
           try{
             await this.setupMainRoomAsync(socket);
-            callback(true);
+            const playerRotation=(this.playerIndex*PLAYER_ROTATION_OFFSET)%(Math.PI*2);
+            this.playerIndex+=1;
+            callback({
+              wasSucceeded:true,
+              playerRotation,
+            });
           }catch(error){
-            callback(false);
+            callback({wasSucceeded:false});
           }
           break;
         default:
           console.log(`unknown room from waiting: ${room}`);
-          callback(false);
+          callback({wasSucceeded:false});
           break;
       }
     });

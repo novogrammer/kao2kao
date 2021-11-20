@@ -404,15 +404,20 @@ export default class MainClientApp extends BaseClientApp{
       markP,
       dynamicsWorld,
       bodies,
+      ammoAndThreeConverter,
     }=this.ammo;
 
     const {socket}=this;
-    const wasSucceeded=await new Promise((resolve)=>{
+    const {
+      wasSucceeded,
+      playerRotation,
+    }=await new Promise((resolve)=>{
       socket.emit(EVENT_JOIN,{
         room:ROOM_MAIN,
-      },(wasSucceeded)=>{
+      },({wasSucceeded,playerRotation})=>{
+        console.log("EVENT_JOIN result",wasSucceeded,playerRotation);
         this.setJoined(wasSucceeded);
-        resolve(wasSucceeded);
+        resolve({wasSucceeded,playerRotation});
       });
     });
     if(!wasSucceeded){
@@ -424,7 +429,7 @@ export default class MainClientApp extends BaseClientApp{
       animations:originalHanpenGltf.animations,
       scene:SkeletonUtils.clone(originalHanpenGltf.scene),
     };
-    const myPlayer=new MyPlayer(hanpenGltf);
+    const myPlayer=new MyPlayer(hanpenGltf,playerRotation);
     scene.add(myPlayer);
     myPlayer.setVideo(localVideo);
 
@@ -432,7 +437,7 @@ export default class MainClientApp extends BaseClientApp{
     const capsuleShape = markP(new AmmoLib.btCapsuleShape(1/2,CAPSULE_HEIGHT/2));
     const startTransform = markT(new AmmoLib.btTransform());
     startTransform.setIdentity();
-    startTransform.setOrigin(markT(new AmmoLib.btVector3(0,5,0)));
+    startTransform.setOrigin(markT(ammoAndThreeConverter.convertVector3ThreeToAmmo(myPlayer.position)));
     const mass = 1;
     const localInertia = markT(new AmmoLib.btVector3(0, 0, 0));
     capsuleShape.calculateLocalInertia(mass, localInertia);
@@ -577,6 +582,7 @@ export default class MainClientApp extends BaseClientApp{
           quaternion:packetThreeConverter.convertQuaternionThreeToPacket(myPlayer.quaternion),
         },
         runningWeight:myPlayer.getRunningWeight(),
+        playerRotation:myPlayer.getPlayerRotation(),
       };
       // socket.emit(EVENT_MY_MOVE,myData);
       const cpm= FPS_CLIENT / FPS_MESSAGE;
@@ -713,7 +719,7 @@ export default class MainClientApp extends BaseClientApp{
     }
     
   }
-  async onTheirMoveAsync({peerId,transform,runningWeight}){
+  async onTheirMoveAsync({peerId,transform,runningWeight,playerRotation}){
     // console.log("MainClientApp#onTheirMoveAsync",peerId);
     // console.log(peerId,JSON.stringify(transform));
     const {theirPlayerList,packetThreeConverter}=this.three;
@@ -723,6 +729,7 @@ export default class MainClientApp extends BaseClientApp{
       packetThreeConverter.convertVector3PacketToThree(transform.position,theirPlayer.position);
       packetThreeConverter.convertQuaternionPacketToThree(transform.quaternion,theirPlayer.quaternion);
       theirPlayer.setRunningWeight(runningWeight);
+      theirPlayer.setPlayerRotation(playerRotation);
 
     }
   }

@@ -3,8 +3,9 @@ import * as THREE from "three";
 
 
 export default class MyPlayer extends BasePlayer{
-  constructor(hanpenGltf){
-    super(hanpenGltf);
+  constructor(hanpenGltf,playerRotation){
+    super(hanpenGltf,playerRotation);
+    
   }
 
 
