@@ -736,7 +736,8 @@ export default class MainClientApp extends BaseClientApp{
     const theirPlayer=theirPlayerList.find((theirPlayer)=>theirPlayer.peerId==peerId);
     if(theirPlayer){
       const {cameraBase}=theirPlayer.userData;
-      packetThreeConverter.convertVector3PacketToThree(transform.position,theirPlayer.position);
+      const targetPosition=packetThreeConverter.convertVector3PacketToThree(transform.position);
+      theirPlayer.setTargetPosition(targetPosition);
       packetThreeConverter.convertQuaternionPacketToThree(transform.quaternion,theirPlayer.quaternion);
       theirPlayer.setRunningWeight(runningWeight);
       theirPlayer.setPlayerRotation(playerRotation);

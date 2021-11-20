@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { ACTION_WEIGHT_VELOCITY } from "../../common/constants";
+import { ACTION_WEIGHT_VELOCITY, FPS_MESSAGE } from "../../common/constants";
 
 export default class BasePlayer extends THREE.Group{
   constructor(hanpenGltf,playerRotation=null){
@@ -7,6 +7,8 @@ export default class BasePlayer extends THREE.Group{
     Object.assign(this.userData,{
       hanpenGltf,
       playerRotation,
+      velocity:null,
+      velocityRemainTime:0,
     });
     this.setupScene();
   }
@@ -120,7 +122,7 @@ export default class BasePlayer extends THREE.Group{
     }
   }
   update(deltaTime){
-    const {mixer,actionMap,runningWeight}=this.userData;
+    const {mixer,actionMap,runningWeight,velocity}=this.userData;
     const idleAction=actionMap.get("Idle");
     const runningAction=actionMap.get("Running");
     let currentRunningWeight=runningAction.getEffectiveWeight();
@@ -131,6 +133,14 @@ export default class BasePlayer extends THREE.Group{
       const direction=Math.sign(runningWeight-currentRunningWeight);
       currentRunningWeight+=direction*deltaWeight;
     }
+    if(0<this.userData.velocityRemainTime){
+      this.userData.velocityRemainTime-=deltaTime;
+      if(velocity!=null){
+        const dp=velocity.clone().multiplyScalar(deltaTime);
+        this.position.add(dp);
+      }
+    }
+
     // console.log(runningWeight,currentRunningWeight);
     idleAction.setEffectiveWeight(1-currentRunningWeight);
     runningAction.setEffectiveWeight(currentRunningWeight);
@@ -162,5 +172,14 @@ export default class BasePlayer extends THREE.Group{
         material.color.copy(color);
       }
     });
+  }
+  setTargetPosition(targetPosition){
+    const velocityRemainTime=1/FPS_MESSAGE;
+    const velocity=targetPosition.clone().sub(this.position).multiplyScalar(1/velocityRemainTime);
+    Object.assign(this.userData,{
+      velocity,
+      velocityRemainTime,
+    });
+    
   }
 }
