@@ -28,12 +28,12 @@ export default class BasePlayer extends THREE.Group{
 
 
     const cameraBase=new THREE.Object3D();
-    cameraBase.position.y=2;
+    cameraBase.position.y=1.6;
     cameraBase.position.z=-0.3;
     this.add(cameraBase);
     const cameraTarget=new THREE.Object3D();
-    cameraTarget.position.y=0.5;
-    cameraTarget.position.z=1.5;
+    cameraTarget.position.y=1.0;
+    cameraTarget.position.z=2.0;
     cameraBase.add(cameraTarget);
 
     
