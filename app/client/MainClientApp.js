@@ -1,4 +1,4 @@
-import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, CAPSULE_HEIGHT, DISABLE_DEACTIVATION, EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_POPULATION, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, IS_DEBUG_CAMERA, KEY_CODE_ARROW_DOWN, KEY_CODE_ARROW_LEFT, KEY_CODE_ARROW_RIGHT, KEY_CODE_ARROW_UP, KEY_CODE_KEY_A, KEY_CODE_KEY_D, KEY_CODE_KEY_S, KEY_CODE_KEY_W, PLAYER_CAMERA_ROTATION_RANGE, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
+import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RIGHT, BUTTON_NAME_CAMERA_UP, BUTTON_NAME_MOVE_BACKWARD, BUTTON_NAME_MOVE_FORWARD, BUTTON_NAME_MOVE_LEFT, BUTTON_NAME_MOVE_RIGHT, CAPSULE_HEIGHT, DISABLE_DEACTIVATION, EVENT_ADD_PEER, EVENT_JOIN, EVENT_MY_MOVE, EVENT_POPULATION, EVENT_REMOVE_PEER, EVENT_THEIR_MOVE, FPS_CLIENT, FPS_MESSAGE, IS_DEBUG, IS_DEBUG_CAMERA, KEY_CODE_ARROW_DOWN, KEY_CODE_ARROW_LEFT, KEY_CODE_ARROW_RIGHT, KEY_CODE_ARROW_UP, KEY_CODE_KEY_A, KEY_CODE_KEY_D, KEY_CODE_KEY_S, KEY_CODE_KEY_W, PLAYER_ANGULAR_VELOCITY, PLAYER_CAMERA_ROTATION_RANGE, PLAYER_MOVE_FORCE, ROOM_MAIN, ROOM_WAITING } from "../common/constants";
 import BaseClientApp from "./BaseClientApp";
 import Stats from "stats.js";
 import * as animate from 'animate';
@@ -444,6 +444,8 @@ export default class MainClientApp extends BaseClientApp{
 
     const myMotionState = markP(new AmmoLib.btDefaultMotionState(startTransform));
     const rbInfo = markT(new AmmoLib.btRigidBodyConstructionInfo(mass, myMotionState, capsuleShape, localInertia));
+    rbInfo.m_friction=0.5;
+    rbInfo.m_linearDamping=0.75;
     const capsuleBody = markP(new AmmoLib.btRigidBody(rbInfo));
     capsuleBody.setAngularFactor(markT(new AmmoLib.btVector3(0,0,0)));
     capsuleBody.setActivationState(DISABLE_DEACTIVATION);
@@ -492,38 +494,38 @@ export default class MainClientApp extends BaseClientApp{
       }
       const fTotal=new THREE.Vector3();
       if(isSomeDown([KEY_CODE_KEY_W,BUTTON_NAME_MOVE_FORWARD])){
-        const f=new THREE.Vector3(0,0,-1).applyQuaternion(myPlayer.quaternion).multiplyScalar(10);
+        const f=new THREE.Vector3(0,0,-1).applyQuaternion(myPlayer.quaternion).multiplyScalar(PLAYER_MOVE_FORCE);
         fTotal.add(f);
       }
       if(isSomeDown([KEY_CODE_KEY_A,BUTTON_NAME_MOVE_LEFT])){
-        const f=new THREE.Vector3(-1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(10);
+        const f=new THREE.Vector3(-1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(PLAYER_MOVE_FORCE);
         fTotal.add(f);
       }
       if(isSomeDown([KEY_CODE_KEY_S,BUTTON_NAME_MOVE_BACKWARD])){
-        const f=new THREE.Vector3(0,0,1).applyQuaternion(myPlayer.quaternion).multiplyScalar(10);
+        const f=new THREE.Vector3(0,0,1).applyQuaternion(myPlayer.quaternion).multiplyScalar(PLAYER_MOVE_FORCE);
         fTotal.add(f);
       }
       if(isSomeDown([KEY_CODE_KEY_D,BUTTON_NAME_MOVE_RIGHT])){
-        const f=new THREE.Vector3(1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(10);
+        const f=new THREE.Vector3(1,0,0).applyQuaternion(myPlayer.quaternion).multiplyScalar(PLAYER_MOVE_FORCE);
         fTotal.add(f);
       }
       if(isSomeDown([KEY_CODE_ARROW_UP,BUTTON_NAME_CAMERA_UP])){
-        cameraBase.rotation.x+=0.1;
+        cameraBase.rotation.x+=PLAYER_ANGULAR_VELOCITY/FPS_CLIENT;
         if(PLAYER_CAMERA_ROTATION_RANGE<cameraBase.rotation.x){
           cameraBase.rotation.x=PLAYER_CAMERA_ROTATION_RANGE;
         }
       }
       if(isSomeDown([KEY_CODE_ARROW_LEFT,BUTTON_NAME_CAMERA_LEFT])){
-        myPlayer.rotation.y+=0.1;
+        myPlayer.rotation.y+=PLAYER_ANGULAR_VELOCITY/FPS_CLIENT;
       }
       if(isSomeDown([KEY_CODE_ARROW_DOWN,BUTTON_NAME_CAMERA_DOWN])){
-        cameraBase.rotation.x-=0.1;
+        cameraBase.rotation.x-=PLAYER_ANGULAR_VELOCITY/FPS_CLIENT;
         if(cameraBase.rotation.x<PLAYER_CAMERA_ROTATION_RANGE*-1){
           cameraBase.rotation.x=PLAYER_CAMERA_ROTATION_RANGE*-1;
         }
       }
       if(isSomeDown([KEY_CODE_ARROW_RIGHT,BUTTON_NAME_CAMERA_RIGHT])){
-        myPlayer.rotation.y-=0.1;
+        myPlayer.rotation.y-=PLAYER_ANGULAR_VELOCITY/FPS_CLIENT;
       }
       if(0<fTotal.lengthSq()){
         capsuleBody.applyCentralForce(markT(ammoAndThreeConverter.convertVector3ThreeToAmmo(fTotal)));

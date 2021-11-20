@@ -16,6 +16,11 @@ const DEG_TO_RAD = Math.PI/180;
 export const PLAYER_ROTATION_OFFSET = 360*3/20 * DEG_TO_RAD;
 export const PLAYER_CAMERA_ROTATION_RANGE=45*DEG_TO_RAD;
 
+// [N]
+export const PLAYER_MOVE_FORCE=20;
+// [rad/s]
+export const PLAYER_ANGULAR_VELOCITY=60*DEG_TO_RAD;
+
 export const KEY_CODE_KEY_W="KeyW";
 export const KEY_CODE_KEY_A="KeyA";
 export const KEY_CODE_KEY_S="KeyS";
