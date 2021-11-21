@@ -142,24 +142,48 @@ export default class MainClientApp extends BaseClientApp{
     stats.addPanel( gpuPanel );
     stats.showPanel( 0 );
 
-    // const ambientLight=new THREE.AmbientLight(0xc0c0c0);
-    const ambientLight=new THREE.HemisphereLight( 0xc0c0c0, 0x404040, 1 );
+    const ambientLight=new THREE.AmbientLight(0x404040);
+    // const ambientLight=new THREE.HemisphereLight( 0xc0c0c0, 0x404040, 1 );
     scene.add(ambientLight);
-    const light = new THREE.DirectionalLight( 0xffffff, 0.5 );
-    light.position.set(0,10,0);
-    light.castShadow = true;
-    light.shadow.mapSize.width = 512; // default
-    light.shadow.mapSize.height = 512; // default
-    light.shadow.camera.near = 0.5; // default
-    light.shadow.camera.far = 500; // default
-    const cameraRectSize=20;
-    light.shadow.camera.left=cameraRectSize*-0.5;
-    light.shadow.camera.bottom=cameraRectSize*-0.5;
-    light.shadow.camera.right=cameraRectSize*0.5;
-    light.shadow.camera.top=cameraRectSize*0.5;
-    light.shadow.normalBias=0.05;
 
-    scene.add( light );
+    // {
+    //   const light = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    //   light.position.set(0,9,0);
+    //   light.castShadow = true;
+    //   light.shadow.mapSize.width = 512; // default
+    //   light.shadow.mapSize.height = 512; // default
+    //   light.shadow.camera.near = 0.5; // default
+    //   light.shadow.camera.far = 500; // default
+    //   const cameraRectSize=20;
+    //   light.shadow.camera.left=cameraRectSize*-0.5;
+    //   light.shadow.camera.bottom=cameraRectSize*-0.5;
+    //   light.shadow.camera.right=cameraRectSize*0.5;
+    //   light.shadow.camera.top=cameraRectSize*0.5;
+    //   light.shadow.normalBias=0.05;
+    //   scene.add( light );
+    // }
+
+    for(let i=0;i<2;++i){
+      const light = new THREE.SpotLight( 0xffffff, 0.3,0,90 );
+      switch(i){
+        case 0:
+          light.position.set(10,10,10);
+          break;
+        case 1:
+          light.position.set(-10,10,-10);
+          break;
+        default:
+          throw new Error("unexpected index");
+      }
+      light.castShadow = true;
+      light.shadow.mapSize.width = 512*2;
+      light.shadow.mapSize.height = 512*2;
+      light.shadow.camera.near = 0.05;
+      light.shadow.camera.far = 50;
+    light.shadow.normalBias=0.2;
+      scene.add( light );
+
+    }
 
     const cubeTextureLoader = new THREE.CubeTextureLoader();
     cubeTextureLoader.setPath( 'assets/textures/cube/Bridge2/' );
@@ -174,45 +198,57 @@ export default class MainClientApp extends BaseClientApp{
     const originalHanpenGltf=await new Promise((resolve,reject)=>{
       gltfLoader.load('hanpen_animation.glb',resolve,null,reject);
     });
+    const originalBoxyroomGltf=await new Promise((resolve,reject)=>{
+      gltfLoader.load('boxyroom.glb',resolve,null,reject);
+    });
     // console.log(originalHanpenGltf);
 
 
     const groundGroup=new THREE.Group();
     scene.add( groundGroup );
+    // {
+    //   const size=20;
+    //   const ground = new THREE.Mesh(
+    //     // new THREE.BoxGeometry(100,100,100),
+    //     new THREE.BoxGeometry(size,size,size),
+    //     // new THREE.SphereGeometry( 15, 32, 16 ),
+    //     new THREE.MeshStandardMaterial( {
+    //        color: 0xffffff ,
+    //        side:THREE.DoubleSide,
+    //       } )
+    //   );
+    //   ground.geometry.scale(-1,1,1);//flip normal
+    //   ground.geometry.computeVertexNormals();
+    //   ground.position.y=size/2;
+    //   ground.castShadow=true;
+    //   ground.receiveShadow=true;
+    //   groundGroup.add(ground);
+    // }
+    // {
+    //   const size=5;
+    //   const ground = new THREE.Mesh(
+    //     // new THREE.BoxGeometry(100,100,100),
+    //     new THREE.BoxGeometry(size,size,size),
+    //     // new THREE.SphereGeometry( 15, 32, 16 ),
+    //     new THREE.MeshStandardMaterial( {
+    //        color: 0xffffff ,
+    //       } )
+    //   );
+    //   ground.position.y=-1;
+    //   ground.position.z=-5;
+    //   ground.rotation.z=THREE.MathUtils.degToRad(30);
+    //   ground.castShadow=true;
+    //   ground.receiveShadow=true;
+    //   groundGroup.add(ground);
+    // }
     {
-      const size=20;
-      const ground = new THREE.Mesh(
-        // new THREE.BoxGeometry(100,100,100),
-        new THREE.BoxGeometry(size,size,size),
-        // new THREE.SphereGeometry( 15, 32, 16 ),
-        new THREE.MeshStandardMaterial( {
-           color: 0xffffff ,
-           side:THREE.DoubleSide,
-          } )
-      );
-      ground.geometry.scale(-1,1,1);//flip normal
-      ground.geometry.computeVertexNormals();
-      ground.position.y=size/2;
-      ground.castShadow=true;
-      ground.receiveShadow=true;
-      groundGroup.add(ground);
-    }
-    {
-      const size=5;
-      const ground = new THREE.Mesh(
-        // new THREE.BoxGeometry(100,100,100),
-        new THREE.BoxGeometry(size,size,size),
-        // new THREE.SphereGeometry( 15, 32, 16 ),
-        new THREE.MeshStandardMaterial( {
-           color: 0xffffff ,
-          } )
-      );
-      ground.position.y=-1;
-      ground.position.z=-5;
-      ground.rotation.z=THREE.MathUtils.degToRad(30);
-      ground.castShadow=true;
-      ground.receiveShadow=true;
-      groundGroup.add(ground);
+      originalBoxyroomGltf.scene.traverse((object)=>{
+        if(object.isMesh){
+          object.castShadow=true;
+          object.receiveShadow=true;
+        }
+      })
+      groundGroup.add(originalBoxyroomGltf.scene);
     }
 
     this.three={
