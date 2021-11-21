@@ -127,12 +127,14 @@ export default class ServerApp{
   async setupMainRoomAsync(socket){
     console.log("ServerApp#setupMainRoomAsync");
     const {io} = this;
+    const previousRoom=ROOM_WAITING;
     const room=ROOM_MAIN;
     
     if(MAIN_ROOM_CAPACITY<=Array.from(await io.in(ROOM_MAIN).allSockets()).length){
       throw new Error("over MAIN_ROOM_CAPACITY");
     }
     socket.join(room);
+    socket.leave(previousRoom);
 
     socket.on("disconnect", (reason) => {
       console.log("disconnect reason:" + reason);
