@@ -253,6 +253,39 @@ export default class MainClientApp extends BaseClientApp{
       groundGroup.add(originalBoxyroomGltf.scene);
     }
 
+    const gakubuchiTextureLoader=new THREE.TextureLoader();
+    gakubuchiTextureLoader.setPath( 'assets/textures/gakubuchi/');
+    for(let i=0;i<2;++i){
+      let texture = null;
+      switch(i){
+        case 0:
+          texture=gakubuchiTextureLoader.load("gakubuchi_neko.jpg");
+          break;
+        case 1:
+          texture=gakubuchiTextureLoader.load("gakubuchi_kaomangekyo.jpg");
+          break;
+        default:
+          throw new Error("unknown index");
+      }
+      texture.encoding=THREE.sRGBEncoding;
+      const size=5;
+      const gakubuchi=new THREE.Mesh(
+        new THREE.PlaneBufferGeometry(size*2,size),
+        new THREE.MeshStandardMaterial({
+          map:texture,
+          metalness:0.1,
+          roughness:0.5,
+        })
+      );
+      const r=THREE.MathUtils.degToRad(180*i);
+      const v=new THREE.Vector3(0,size*0.5+4+0.5,-10 + 0.01);
+      v.applyAxisAngle(new THREE.Vector3(0,1,0),r);
+      gakubuchi.position.copy(v);
+      gakubuchi.rotation.y=r;
+      
+      scene.add(gakubuchi);
+    }
+
     this.three={
       clock,
       scene,
