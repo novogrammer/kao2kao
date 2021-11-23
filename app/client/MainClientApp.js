@@ -190,7 +190,7 @@ export default class MainClientApp extends BaseClientApp{
 
     const textureCube = cubeTextureLoader.load( [ 'posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg' ] );
     textureCube.encoding = THREE.sRGBEncoding;
-    scene.background = textureCube;
+    // scene.background = textureCube;
     scene.environment=textureCube;
 
     const gltfLoader=new GLTFLoader();
