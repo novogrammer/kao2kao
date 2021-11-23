@@ -246,6 +246,8 @@ export default class MainClientApp extends BaseClientApp{
         if(object.isMesh){
           object.castShadow=true;
           object.receiveShadow=true;
+          const {material}=object;
+          material.side=THREE.FrontSide;
         }
       })
       groundGroup.add(originalBoxyroomGltf.scene);
