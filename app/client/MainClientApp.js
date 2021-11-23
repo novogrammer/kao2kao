@@ -452,7 +452,11 @@ export default class MainClientApp extends BaseClientApp{
         room:ROOM_MAIN,
       },({wasSucceeded,playerRotation})=>{
         console.log("EVENT_JOIN result",wasSucceeded,playerRotation);
-        this.setJoined(wasSucceeded);
+        if(this.three.myPlayer==null){
+          this.setJoined(wasSucceeded);
+        }else{
+          console.log("already joined.")
+        }
         resolve({wasSucceeded,playerRotation});
       });
     });

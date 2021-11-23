@@ -45,10 +45,13 @@ export default function Home({iceServers}) {
     await clientApp.destroyAsync();
   });
   const onClickJoinAsync=async ()=>{
+
     const clientApp=clientAppRef.current;
     await clientApp.setupPromise;
-    // stateによるdisabledが追いつかないことがある
-    joinButtonRef.current.disabled=true;
+    if(joinButtonRef.current!=null){
+      // stateによるdisabledが追いつかないことがある
+      joinButtonRef.current.disabled=true;
+    }
     setPending(true);
     await clientApp.onClickJoinAsync();
   }

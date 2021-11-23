@@ -113,6 +113,7 @@ export default class ServerApp{
               playerRotation,
             });
           }catch(error){
+            console.log(`join failed: ${error?.message}`);
             callback({wasSucceeded:false});
           }
           break;
@@ -129,8 +130,11 @@ export default class ServerApp{
     const {io} = this;
     const previousRoom=ROOM_WAITING;
     const room=ROOM_MAIN;
-    
-    if(MAIN_ROOM_CAPACITY<=Array.from(await io.in(ROOM_MAIN).allSockets()).length){
+    const mainRoomIds=Array.from(await io.in(ROOM_MAIN).allSockets());
+    if(mainRoomIds.includes(socket.id)){
+      throw new Error("already joined");
+    }
+    if(MAIN_ROOM_CAPACITY<=mainRoomIds.length){
       throw new Error("over MAIN_ROOM_CAPACITY");
     }
     socket.join(room);
