@@ -855,6 +855,16 @@ export default class MainClientApp extends BaseClientApp{
       buttonState.setNewPressState(false);
     }
   }
+  setMuted(muted){
+    const {listener}=this.three;
+    const {stream}=this;
+    listener.setMasterVolume(muted?0:1);
+    const audioTracks=stream.getAudioTracks();
+    for(let audioTrack of audioTracks){
+      audioTrack.enabled=!muted;
+    }
+
+  }
 
 
 }

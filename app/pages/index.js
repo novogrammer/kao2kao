@@ -14,6 +14,7 @@ export default function Home({iceServers}) {
   const clientAppRef=useRef(null);
   const localVideoRef=useRef(null);
   const joinButtonRef=useRef(null);
+  const [muted,setMuted]=useState(false);
   const [joined,setJoined]=useState(false);
   const [pending,setPending]=useState(false);
   const [populations,setPopulations]=useState({
@@ -80,12 +81,21 @@ export default function Home({iceServers}) {
     onButtonUp(name,event);
   }
 
+  const onClickMute=(event)=>{
+    const clientApp=clientAppRef.current;
+    const nextMuted=!muted;
+    clientApp.setMuted(nextMuted);
+    setMuted(nextMuted);
+  }
+
   return (
     <div className={styles.home}>
       <Head>
         <title>顔 to 顔</title>
         <meta name="description" content="気まぐれでサービスを停止します。" />
         {/* <link rel="icon" href="/favicon.ico" /> */}
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"></link>
       </Head>
       <div className={styles.background}>
         <canvas ref={viewRef}></canvas>
@@ -108,25 +118,25 @@ export default function Home({iceServers}) {
               onButtonDown={onButtonDown}
               onButtonUp={onButtonUp}
               buttonName={BUTTON_NAME_MOVE_FORWARD}
-            >↑</Button>
+            >W</Button>
             <Button
               className={styles.controller__moveleft}
               onButtonDown={onButtonDown}
               onButtonUp={onButtonUp}
               buttonName={BUTTON_NAME_MOVE_LEFT}
-            >←</Button>
+            >A</Button>
             <Button
               className={styles.controller__movebackward}
               onButtonDown={onButtonDown}
               onButtonUp={onButtonUp}
               buttonName={BUTTON_NAME_MOVE_BACKWARD}
-            >↓</Button>
+            >S</Button>
             <Button
               className={styles.controller__moveright}
               onButtonDown={onButtonDown}
               onButtonUp={onButtonUp}
               buttonName={BUTTON_NAME_MOVE_RIGHT}
-            >→</Button>
+            >D</Button>
             <Button
               className={styles.controller__cameraup}
               onButtonDown={onButtonDown}
@@ -151,6 +161,15 @@ export default function Home({iceServers}) {
               onButtonUp={onButtonUp}
               buttonName={BUTTON_NAME_CAMERA_RIGHT}
             >→</Button>
+            {
+              muted?(<div
+                className={styles.controller__mute}
+                onClick={onClickMute}
+              ><span className="material-icons" style={{fontSize:"100%"}}>&#xE02B;&#xE04F;</span></div>):(<div
+                className={styles.controller__mute}
+                onClick={onClickMute}
+              ><span className="material-icons" style={{fontSize:"100%"}}>&#xE029;&#xE050;</span></div>)
+            }
           </div>
   
         )

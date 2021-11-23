@@ -61,12 +61,12 @@ $BUTTON_SIZE:16vmin;
   border-radius: $BUTTON_SIZE * 0.1;
   background:rgba(255,255,255,0.5);
   border:1px solid #000;
-  font-size:$BUTTON_SIZE * 0.3;
+  font-size:$BUTTON_SIZE * 0.5 !important;
   cursor:pointer;
   touch-action: none;
   text-align: center;
   box-sizing: border-box;
-  padding-top:$BUTTON_SIZE *0.25;
+  padding-top:$BUTTON_SIZE *0.2;
 }
 
 .controller__moveforward{
@@ -111,6 +111,12 @@ $BUTTON_SIZE:16vmin;
   @include button();
   right:$BUTTON_SIZE * 0;
   bottom:$BUTTON_SIZE * 0;
+}
+
+.controller__mute{
+  @include button();
+  left:$BUTTON_SIZE * 0;
+  top:$BUTTON_SIZE * 0;
 }
 
 
