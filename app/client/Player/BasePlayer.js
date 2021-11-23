@@ -30,6 +30,7 @@ export default class BasePlayer extends THREE.Group{
 
 
     const cameraBase=new THREE.Object3D();
+    cameraBase.rotation.order="YXZ";
     cameraBase.position.y=1.6;
     cameraBase.position.z=-0.3;
     this.add(cameraBase);
