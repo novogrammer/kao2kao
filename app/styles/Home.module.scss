@@ -1,4 +1,4 @@
-
+$BUTTON_SIZE:16vmin;
 
 .home{
   position:relative;
@@ -56,61 +56,61 @@
   position:absolute;
   pointer-events: auto;
   user-select:none;
-  width:10vmin;
-  height:10vmin;
-  border-radius: 1vmin;
+  width:$BUTTON_SIZE;
+  height:$BUTTON_SIZE;
+  border-radius: $BUTTON_SIZE * 0.1;
   background:rgba(255,255,255,0.5);
   border:1px solid #000;
-  font-size:3vmin;
+  font-size:$BUTTON_SIZE * 0.3;
   cursor:pointer;
   touch-action: none;
   text-align: center;
   box-sizing: border-box;
-  padding-top:2.5vmin;
+  padding-top:$BUTTON_SIZE *0.25;
 }
 
 .controller__moveforward{
   @include button();
-  left:10vmin;
-  bottom:10vmin;
+  left:$BUTTON_SIZE * 1;
+  bottom:$BUTTON_SIZE * 1;
 }
 .controller__moveleft{
   @include button();
-  left:0vmin;
-  bottom:0vmin;
+  left:$BUTTON_SIZE * 0;
+  bottom:$BUTTON_SIZE * 0;
 }
 .controller__movebackward{
   @include button();
-  left:10vmin;
-  bottom:0vmin;
+  left:$BUTTON_SIZE * 1;
+  bottom:$BUTTON_SIZE * 0;
 
 }
 .controller__moveright{
   @include button();
-  left:20vmin;
-  bottom:0vmin;
+  left:$BUTTON_SIZE * 2;
+  bottom:$BUTTON_SIZE * 0;
 }
 
 .controller__cameraup{
   @include button();
-  right:10vmin;
-  bottom:10vmin;
+  right:$BUTTON_SIZE * 1;
+  bottom:$BUTTON_SIZE * 1;
 }
 .controller__cameraleft{
   @include button();
-  right:20vmin;
-  bottom:0vmin;
+  right:$BUTTON_SIZE * 2;
+  bottom:$BUTTON_SIZE * 0;
 }
 .controller__cameradown{
   @include button();
-  right:10vmin;
-  bottom:0vmin;
+  right:$BUTTON_SIZE * 1;
+  bottom:$BUTTON_SIZE * 0;
 
 }
 .controller__cameraright{
   @include button();
-  right:0vmin;
-  bottom:0vmin;
+  right:$BUTTON_SIZE * 0;
+  bottom:$BUTTON_SIZE * 0;
 }
 
 
