@@ -15,7 +15,7 @@ export const MAIN_ROOM_CAPACITY=10;
 const DEG_TO_RAD = Math.PI/180;
 export const PLAYER_ROTATION_OFFSET = 360*3/20 * DEG_TO_RAD;
 export const PLAYER_CAMERA_ROTATION_RANGE=45*DEG_TO_RAD;
-
+export const PLAYER_CAMERA_Z=2;
 // [N]
 export const PLAYER_MOVE_FORCE=20;
 // [rad/s]

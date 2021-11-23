@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { ACTION_WEIGHT_VELOCITY, FPS_MESSAGE } from "../../common/constants";
+import { ACTION_WEIGHT_VELOCITY, FPS_MESSAGE, PLAYER_CAMERA_Z } from "../../common/constants";
 
 export default class BasePlayer extends THREE.Group{
   constructor(hanpenGltf,playerRotation=null){
@@ -35,7 +35,7 @@ export default class BasePlayer extends THREE.Group{
     this.add(cameraBase);
     const cameraTarget=new THREE.Object3D();
     cameraTarget.position.y=1.0;
-    cameraTarget.position.z=2.0;
+    cameraTarget.position.z=PLAYER_CAMERA_Z;
     cameraBase.add(cameraTarget);
 
     
