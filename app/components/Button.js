@@ -5,7 +5,6 @@ export default function Button(props){
   let classNameList=[props.className];
   const {buttonName,onButtonDown,onButtonUp}=props;
   const onTouchStart=(name,event)=>{
-    event.preventDefault();
     onButtonDown(name,event);
   }
   const onTouchEnd=(name,event)=>{
@@ -16,6 +15,7 @@ export default function Button(props){
   }
   const onContextMenu=(event)=>{
     event.preventDefault();
+    event.stopPropagation();
   }
 
   return (

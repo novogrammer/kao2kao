@@ -62,24 +62,19 @@ export default function Home({iceServers}) {
   if(joined){
     cameraClassNames.push(styles["waiting__camera--joined"]);
   }
-  const onButtonDown=(name)=>{
+  const onButtonDown=(name,event)=>{
+    event.preventDefault();
+    event.stopPropagation();
     const clientApp=clientAppRef.current;
     clientApp.onButtonDown(name);
   };
-  const onButtonUp=(name)=>{
+  const onButtonUp=(name,event)=>{
+    event.preventDefault();
+    event.stopPropagation();
     const clientApp=clientAppRef.current;
     clientApp.onButtonUp(name);
   };
-  const onTouchStart=(name,event)=>{
-    event.preventDefault();
-    onButtonDown(name,event);
-  }
-  const onTouchEnd=(name,event)=>{
-    onButtonUp(name,event);
-  }
-  const onTouchCancel=(name,event)=>{
-    onButtonUp(name,event);
-  }
+
 
   const onClickMute=(event)=>{
     const clientApp=clientAppRef.current;
