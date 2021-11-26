@@ -760,7 +760,7 @@ export default class MainClientApp extends BaseClientApp{
 
         const setupVideo=()=>{
           const sound=new THREE.PositionalAudio(listener);
-          sound.setRefDistance( 1 );// [m]
+          sound.setRefDistance( 3 );// [m]
           sound.setRolloffFactor( 1 );
           sound.setDistanceModel("exponential");
   
