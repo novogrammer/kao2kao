@@ -10,7 +10,7 @@ export const CAPSULE_HEIGHT=2;
 
 export const ACTION_WEIGHT_VELOCITY=1;
 
-export const MAIN_ROOM_CAPACITY=10;
+export const MAIN_ROOM_CAPACITY=5;
 
 const DEG_TO_RAD = Math.PI/180;
 export const PLAYER_ROTATION_OFFSET = 360*3/20 * DEG_TO_RAD;
