@@ -620,8 +620,6 @@ export default class MainClientApp extends BaseClientApp{
           myPlayer.rotation.y+=cameraBase.rotation.y - PLAYER_CAMERA_ROTATION_Y_RANGE*-1;
           cameraBase.rotation.y=PLAYER_CAMERA_ROTATION_Y_RANGE*-1;
         }
-
-        myPlayer.rotation.y-=PLAYER_ANGULAR_VELOCITY/FPS_CLIENT;
       }
       if(0<fTotal.lengthSq()){
         capsuleBody.applyCentralForce(markT(ammoAndThreeConverter.convertVector3ThreeToAmmo(fTotal)));
