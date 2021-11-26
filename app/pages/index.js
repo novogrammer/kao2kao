@@ -7,8 +7,11 @@ import { BUTTON_NAME_CAMERA_DOWN, BUTTON_NAME_CAMERA_LEFT, BUTTON_NAME_CAMERA_RI
 import Button from "../components/Button";
 // import getConfig from "next/config";
 // const { publicRuntimeConfig } = getConfig();
+import Modal from 'react-modal';
 
 import styles from "../styles/Home.module.scss";
+
+// Modal.setAppElement('#MyAppElement');
 
 export default function Home({iceServers}) {
   const clientAppRef=useRef(null);
@@ -21,6 +24,15 @@ export default function Home({iceServers}) {
     [ROOM_MAIN]:null,
     [ROOM_WAITING]:null,
   });
+  const [modalIsOpen, setIsOpen] = useState(false);
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }  
+
 
   const viewRef=useRef(null);
 
@@ -92,6 +104,34 @@ export default function Home({iceServers}) {
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"></link>
       </Head>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        styles={{
+          content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            transform: 'translate(-50%, -50%)',
+          },
+        }}
+
+      >
+        <h2 className={styles.howto__title}>遊び方</h2>
+        <p className={styles.howto__text}>
+          顔と顔を合わせることがなくなりました。<br/>
+          Web会議は大勢から正面から見つめられている気がして苦手です。<br/>
+          バーチャル空間で少人数で顔と顔を合わせられるようにしました。<br/>
+          <br/>
+          この作品では、近くにいる人の声が大きく聞こえます。<br/>
+          落ち着いて話したい時は近づきましょう。<br/>
+          うるさい声や、聞きたくない話からは離れましょう。<br/>
+          <a href="https://github.com/novogrammer/kao2kao" target="_blank">GitHub</a>
+        </p>
+        <img className={styles.howto__image} src="/assets/img/howto.jpg" alt="howto" />
+        <button className={styles.howto__close} onClick={closeModal}>閉じる</button>
+      </Modal>
       <div className={styles.background}>
         <canvas ref={viewRef}></canvas>
       </div>
@@ -99,9 +139,10 @@ export default function Home({iceServers}) {
         <video className={cameraClassNames.join(" ")} ref={localVideoRef} autoPlay playsInline muted />
         {!joined && (
           <>
-            <button ref={joinButtonRef} className={styles.waiting__join} onClick={onClickJoinAsync}disabled={pending}>join</button>
-            <div className={styles.waiting__population}>Waiting Room:{populations[ROOM_WAITING]}</div>
-            <div className={styles.waiting__population}>Main Room:{populations[ROOM_MAIN]}/{MAIN_ROOM_CAPACITY}</div>
+            <button ref={joinButtonRef} className={styles.waiting__join} onClick={onClickJoinAsync}disabled={pending}>スタート</button>
+            <button className={styles.waiting__howto} onClick={openModal}>遊び方</button>
+            <div className={styles.waiting__population}>待ち人数:{populations[ROOM_WAITING]}</div>
+            <div className={styles.waiting__population}>部屋の人数:{populations[ROOM_MAIN]}/{MAIN_ROOM_CAPACITY}</div>
           </>
         )}
       </div>

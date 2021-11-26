@@ -1,5 +1,12 @@
 $BUTTON_SIZE:16vmin;
 
+@mixin realButton{
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+  font-size:5vmin;
+}
+
 .home{
   position:relative;
   z-index:0;
@@ -30,10 +37,11 @@ $BUTTON_SIZE:16vmin;
 }
 
 .waiting__join{
-  display:block;
-  margin-left:auto;
-  margin-right:auto;
-  font-size:5vmin;
+  @include realButton();
+  margin-bottom:5vmin;
+}
+.waiting__howto{
+  @include realButton();
 }
 .waiting__population{
   display:block;
@@ -43,6 +51,30 @@ $BUTTON_SIZE:16vmin;
   font-size:5vmin;
 }
 
+.howto{
+  // 指定できないのでプログラムで指定する
+}
+.howto__title{
+  text-align:center;
+  font-size:5vmin;
+  margin-bottom:5vmin;
+}
+.howto__text{
+  text-align:center;
+  font-size:2.5vmin;
+  margin-bottom:2.5vmin;
+}
+.howto__image{
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+  width:50vw;
+  height:auto;
+  margin-bottom:5vw;
+}
+.howto__close{
+  @include realButton();
+}
 
 .controller{
   position:fixed;
@@ -52,7 +84,7 @@ $BUTTON_SIZE:16vmin;
   left:0;
   top:0;
 }
-@mixin button{
+@mixin fakeButton{
   position:absolute;
   pointer-events: auto;
   user-select:none;
@@ -70,51 +102,51 @@ $BUTTON_SIZE:16vmin;
 }
 
 .controller__moveforward{
-  @include button();
+  @include fakeButton();
   left:$BUTTON_SIZE * 1;
   bottom:$BUTTON_SIZE * 1;
 }
 .controller__moveleft{
-  @include button();
+  @include fakeButton();
   left:$BUTTON_SIZE * 0;
   bottom:$BUTTON_SIZE * 0;
 }
 .controller__movebackward{
-  @include button();
+  @include fakeButton();
   left:$BUTTON_SIZE * 1;
   bottom:$BUTTON_SIZE * 0;
 
 }
 .controller__moveright{
-  @include button();
+  @include fakeButton();
   left:$BUTTON_SIZE * 2;
   bottom:$BUTTON_SIZE * 0;
 }
 
 .controller__cameraup{
-  @include button();
+  @include fakeButton();
   right:$BUTTON_SIZE * 1;
   bottom:$BUTTON_SIZE * 1;
 }
 .controller__cameraleft{
-  @include button();
+  @include fakeButton();
   right:$BUTTON_SIZE * 2;
   bottom:$BUTTON_SIZE * 0;
 }
 .controller__cameradown{
-  @include button();
+  @include fakeButton();
   right:$BUTTON_SIZE * 1;
   bottom:$BUTTON_SIZE * 0;
 
 }
 .controller__cameraright{
-  @include button();
+  @include fakeButton();
   right:$BUTTON_SIZE * 0;
   bottom:$BUTTON_SIZE * 0;
 }
 
 .controller__mute{
-  @include button();
+  @include fakeButton();
   left:$BUTTON_SIZE * 0;
   top:$BUTTON_SIZE * 0;
 }
