@@ -127,7 +127,7 @@ export default function Home({iceServers}) {
           この作品では、近くにいる人の声が大きく聞こえます。<br/>
           落ち着いて話したい時は近づきましょう。<br/>
           うるさい声や、聞きたくない話からは離れましょう。<br/>
-          <a href="https://github.com/novogrammer/kao2kao" target="_blank">GitHub</a>
+          <a href="https://github.com/novogrammer/kao2kao" target="_blank" rel="noreferrer">GitHub</a>
         </p>
         <img className={styles.howto__image} src="/assets/img/howto.jpg" alt="howto" />
         <button className={styles.howto__close} onClick={closeModal}>閉じる</button>
