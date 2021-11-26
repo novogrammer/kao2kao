@@ -555,10 +555,14 @@ export default class MainClientApp extends BaseClientApp{
     for(let [name,buttonState] of buttonStateMap){
       buttonState.update();
       if(buttonState.isOnDown()){
-        console.log("isOnDown",name);
+        if(IS_DEBUG){
+          console.log("isOnDown",name);
+        }
       }
       if(buttonState.isOnUp()){
-        console.log("isOnUp",name);
+        if(IS_DEBUG){
+          console.log("isOnUp",name);
+        }
       }
     }
 
@@ -847,21 +851,27 @@ export default class MainClientApp extends BaseClientApp{
   }
 
   onButtonDown(name){
-    console.log("MainClientApp#onButtonDown",name);
+    if(IS_DEBUG){
+      console.log("MainClientApp#onButtonDown",name);
+    }
     const buttonState=this.buttonStateMap.get(name);
     if(buttonState){
       buttonState.setNewPressState(true);
     }
   }
   onButtonUp(name){
-    console.log("MainClientApp#onButtonUp",name);
+    if(IS_DEBUG){
+      console.log("MainClientApp#onButtonUp",name);
+    }
     const buttonState=this.buttonStateMap.get(name);
     if(buttonState){
       buttonState.setNewPressState(false);
     }
   }
   onKeydown(event){
-    console.log("MainClientApp#onKeydown",event);
+    if(IS_DEBUG){
+      console.log("MainClientApp#onKeydown",event);
+    }
     const {code}=event;
     const buttonState=this.buttonStateMap.get(code);
     if(buttonState){
@@ -869,7 +879,9 @@ export default class MainClientApp extends BaseClientApp{
     }
   }
   onKeyup(event){
-    console.log("MainClientApp#onKeyup",event);
+    if(IS_DEBUG){
+      console.log("MainClientApp#onKeyup",event);
+    }
     const {code}=event;
     const buttonState=this.buttonStateMap.get(code);
     if(buttonState){
