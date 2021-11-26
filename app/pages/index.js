@@ -140,6 +140,7 @@ export default function Home({iceServers}) {
         {!joined && (
           <>
             <button ref={joinButtonRef} className={styles.waiting__join} onClick={onClickJoinAsync}disabled={pending}>スタート</button>
+            <div className={styles.waiting__notes}>※マイク付きイヤホンを推奨</div>
             <button className={styles.waiting__howto} onClick={openModal}>遊び方</button>
             <div className={styles.waiting__population}>待ち人数:{populations[ROOM_WAITING]}</div>
             <div className={styles.waiting__population}>部屋の人数:{populations[ROOM_MAIN]}/{MAIN_ROOM_CAPACITY}</div>
